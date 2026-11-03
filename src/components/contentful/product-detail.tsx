@@ -29,6 +29,7 @@ import { isPackshot, productImages, productPrice, toCartProduct } from '@/lib/co
 import type { CfEntry, ProductFields } from '@/lib/contentful/types';
 import { useCommerceTracking } from '@/lib/personalization/use-commerce-tracking';
 import { routes } from '@/route-paths';
+import { useLiveEntry } from '@/components/contentful/live-preview/use-live-entry';
 
 function Gallery({ product }: { product: CfEntry<ProductFields> }) {
     const cf = useInspector();
@@ -79,7 +80,8 @@ function Gallery({ product }: { product: CfEntry<ProductFields> }) {
     );
 }
 
-export function ProductDetail({ product, url }: { product: CfEntry<ProductFields>; url: string }) {
+export function ProductDetail({ product: loaded, url }: { product: CfEntry<ProductFields>; url: string }) {
+    const product = useLiveEntry(loaded);
     const f = product.fields;
     const price = productPrice(product);
     const cartProduct = useMemo(() => toCartProduct(product), [product]);
@@ -150,7 +152,7 @@ export function ProductDetail({ product, url }: { product: CfEntry<ProductFields
             </div>
             {(f.additionalSections?.length ?? 0) > 0 && (
                 <div className="mt-16">
-                    <Sections sections={f.additionalSections} />
+                    <Sections sections={f.additionalSections} owner={product} fieldId="additionalSections" />
                 </div>
             )}
         </div>

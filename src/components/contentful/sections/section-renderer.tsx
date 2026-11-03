@@ -13,26 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useLiveOrder } from '@/components/contentful/live-preview/use-live-order';
 import { ExperienceBlock } from '@/components/personalization/experience-block';
+import { useInspector } from '@/lib/contentful/inspector';
 import { contentTypeId, entryKeys, type CfEntry } from '@/lib/contentful/types';
 import { SECTION_TYPES } from './component-renderer';
 
 /** The landing page hero (banner or call to action), full bleed with its heading as the page `h1`. */
-export function Hero({ entry }: { entry: CfEntry | undefined }) {
+export function Hero({
+    entry,
+    ownerId,
+}: {
+    entry: CfEntry | undefined;
+    /** The entry whose `hero` field links this one, so the Live Preview inspector can open that field. */
+    ownerId?: string;
+}) {
+    const cf = useInspector();
     if (!entry || !SECTION_TYPES.has(contentTypeId(entry))) return null;
     return (
-        <div className="w-full overflow-hidden">
+        <div className="w-full overflow-hidden" {...cf(ownerId, 'hero')}>
             <ExperienceBlock entry={entry} asHero />
         </div>
     );
 }
 
-export function Sections({ sections }: { sections: CfEntry[] | undefined }) {
-    const items = (sections ?? []).filter((section) => section && SECTION_TYPES.has(contentTypeId(section)));
+/**
+ * The sections listed in `owner.fields[fieldId]`. Under Live Preview they follow the editor's order as soon as it
+ * changes, without waiting for the save reload.
+ */
+export function Sections({
+    sections,
+    owner,
+    fieldId = 'sections',
+}: {
+    sections: CfEntry[] | undefined;
+    /** The entry whose field lists these sections. */
+    owner: CfEntry | undefined;
+    fieldId?: string;
+}) {
+    const cf = useInspector();
+    const items = useLiveOrder(
+        owner,
+        fieldId,
+        (sections ?? []).filter((section) => section && SECTION_TYPES.has(contentTypeId(section)))
+    );
     if (!items.length) return null;
     const keys = entryKeys(items);
     return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1" {...cf(owner?.sys.id, fieldId)}>
             {items.map((section, index) => (
                 <ExperienceBlock key={keys[index]} entry={section} />
             ))}

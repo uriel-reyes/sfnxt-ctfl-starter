@@ -85,7 +85,7 @@ http://localhost:5173/rawlings/en-US/?cfpreview=<secret>
 With a valid secret, the request:
 
 - reads drafts from the Preview API with Content Source Maps,
-- lazy-loads the Live Preview SDK in inspector mode. Live updates are off, so the editor reloads the preview after each save and the page is always a server render of the latest draft. With live updates on, the editor's merged copy of the entry and the re-fetched loader data compete, and reordering references leaves the page out of step with the editor,
+- lazy-loads the Live Preview SDK with inspector mode and live updates enabled, and re-runs the route loaders as soon as the editor reports a save, so the page is always a server render of the latest draft. The editor autosaves about every 5 seconds, so an edit typically appears 1–6 seconds after it is made. Saves are read from the editor's messages for any entry, because the SDK's own `save` subscription ignores entries not tagged on the page, such as a collection whose items were reordered. Edits don't wait for that reload: `useLiveEntry` subscribes each rendered entry (sections, heroes, products, categories) to the editor's live updates, so changes render as they're typed, and a save reload that reaches the Preview API late never undoes them. `useLiveOrder` follows the editor's order of a page's `sections` (or `additionalSections`) the moment they are dragged, reordering the loader's entries by ID rather than taking the list from the editor's merged graph, which drifts out of step when references are reordered,
 - marks the page `noindex`,
 - carries `cfpreview` on internal links, so the session stays in preview as you click around.
 

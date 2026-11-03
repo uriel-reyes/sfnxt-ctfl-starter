@@ -13,18 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect } from 'react';
-import { ContentfulLivePreview } from '@contentful/live-preview';
+import { useEffect, useRef } from 'react';
+import { useRevalidator } from 'react-router';
+import { livePreviewSdk } from './sdk';
+
+/** Reload as soon as a save lands, then once more in case the Preview API trailed the save (usually under 0.5s). */
+const SAVE_RELOAD_DELAYS_MS = [0, 1500];
+const EDITOR_ORIGINS = new Set(['https://app.contentful.com', 'https://app.eu.contentful.com']);
+
+/** True for the editor's "entry saved" message (autosave included). */
+function isEntrySaved(event: MessageEvent): boolean {
+    const data = event.data as { source?: string; method?: string } | null;
+    return EDITOR_ORIGINS.has(event.origin) && data?.source === 'live-preview-editor' && data.method === 'ENTRY_SAVED';
+}
 
 /**
- * Connects the page to the Contentful editor with inspector mode only. Live updates stay off: with them on, the
- * editor's merged entry graph and the re-fetched loader data are two sources of truth, and a reorder can leave the
- * page out of step with the editor. With them off, the editor reloads the preview after each save, so the page is
- * always the server render of the latest draft.
+ * Connects the page to the Contentful editor and reloads the route data after every save, so the page is always the
+ * server render of the latest draft. Ahead of that reload, in-editor edits render as they're typed: `useLiveEntry`
+ * applies the editor's changes to each rendered entry, and `useLiveOrder` follows the editor's section order by entry
+ * ID (taking a reordered list from the editor's merged graph drifts from the loader's entries).
+ *
+ * Saves are read from the editor's messages directly rather than `ContentfulLivePreview.subscribe('save')`, which
+ * drops saves of entries not tagged on the page (e.g. a collection whose items were reordered). Live updates stay
+ * enabled, as in Contentful's save-and-reload setup; with them off, the editor waits for a manual "Refresh preview".
  */
 export default function LivePreviewRuntime() {
+    const revalidator = useRevalidator();
+    const revalidate = useRef(revalidator.revalidate);
+    revalidate.current = revalidator.revalidate;
+
     useEffect(() => {
-        void ContentfulLivePreview.init({ locale: 'en-US', enableInspectorMode: true, enableLiveUpdates: false });
+        void livePreviewSdk();
+
+        let timers: number[] = [];
+        const onMessage = (event: MessageEvent) => {
+            if (!isEntrySaved(event)) return;
+            timers.forEach((timer) => window.clearTimeout(timer));
+            timers = SAVE_RELOAD_DELAYS_MS.map((ms) => window.setTimeout(() => void revalidate.current(), ms));
+        };
+        window.addEventListener('message', onMessage);
+        return () => {
+            window.removeEventListener('message', onMessage);
+            timers.forEach((timer) => window.clearTimeout(timer));
+        };
     }, []);
+
     return null;
 }

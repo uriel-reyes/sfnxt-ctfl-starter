@@ -38,8 +38,8 @@ export function LandingPage({
             {/* Without an seo title, the home page is titled with the brand name alone. */}
             <ContentSeo seo={seoMetadata} title={isHome ? undefined : title} description={teaser} url={url} />
             {!heroHasHeading && title && <h1 className="sr-only">{title}</h1>}
-            <Hero entry={hero} />
-            <Sections sections={sections} />
+            <Hero entry={hero} ownerId={page.sys.id} />
+            <Sections sections={sections} owner={page} />
         </>
     );
 }

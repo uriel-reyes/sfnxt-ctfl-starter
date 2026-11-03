@@ -17,6 +17,7 @@ import { useMemo } from 'react';
 import { Experience } from '@ninetailed/experience.js-react';
 import { ExperienceMapper, type ExperienceEntryLike } from '@ninetailed/experience.js-utils-contentful';
 import { ComponentRenderer } from '@/components/contentful/sections/component-renderer';
+import { useLiveEntry } from '@/components/contentful/live-preview/use-live-entry';
 import { breakCycles, normalizeExperienceIds } from '@/lib/contentful/live-preview';
 import type { CfEntry } from '@/lib/contentful/types';
 
@@ -25,7 +26,9 @@ import type { CfEntry } from '@/lib/contentful/types';
  * (`fields.nt_experiences`, resolved by the page's deep `include`) are mapped to the SDK format; when the visitor
  * is assigned a variant (A/B split or audience match) the variant entry renders instead of the baseline.
  */
-export function ExperienceBlock({ entry, asHero = false }: { entry: CfEntry; asHero?: boolean }) {
+export function ExperienceBlock({ entry: loaded, asHero = false }: { entry: CfEntry; asHero?: boolean }) {
+    // Under Live Preview, the editor's unsaved changes to this entry (and the entries it links) render as they're typed.
+    const entry = useLiveEntry(loaded);
     const experiences = useMemo(
         () =>
             breakCycles(

@@ -21,12 +21,13 @@ import { stripStega } from '@/lib/contentful/live-preview';
 import type { CfEntry, ProductCategoryFields, ProductFields } from '@/lib/contentful/types';
 import { useCommerceTracking } from '@/lib/personalization/use-commerce-tracking';
 import { routes } from '@/route-paths';
+import { useLiveEntry } from '@/components/contentful/live-preview/use-live-entry';
 
 /** Above-the-fold product tiles load eagerly; the rest are lazy. */
 const EAGER_TILES = 4;
 
 export function CategoryListing({
-    category,
+    category: loaded,
     products,
     url,
 }: {
@@ -34,6 +35,7 @@ export function CategoryListing({
     products: CfEntry<ProductFields>[];
     url: string;
 }) {
+    const category = useLiveEntry(loaded);
     const f = category.fields;
     const tracking = useCommerceTracking();
     const slug = stripStega(category.fields.slug);
