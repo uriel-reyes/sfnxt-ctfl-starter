@@ -1,0 +1,19 @@
+/*
+ * Per-brand palettes. `<html data-brand>` carries the current site id, so portaled overlays (mini cart, dialogs)
+ * pick up the brand too. Colors are sampled from each brand's logo.
+ */
+[data-brand='rawlings'] {
+    --primary: #d40026; /* 5.5:1 with white (AA) */
+    --primary-foreground: #ffffff;
+    --ring: #d40026;
+    --brand-primary: #d40026;
+    --brand-primary-hover: #b00020;
+}
+
+[data-brand='easton'] {
+    --primary: #fbe214; /* 15:1 with the foreground below */
+    --primary-foreground: #111111;
+    --ring: #111111;
+    --brand-primary: #fbe214;
+    --brand-primary-hover: #e5cd00;
+}

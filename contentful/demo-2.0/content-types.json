@@ -1,0 +1,4452 @@
+{
+    "contentModel": "Demo 2.0",
+    "source": {
+        "spaceName": "Bob Demos",
+        "spaceId": "5cee49thobbo",
+        "environment": "master",
+        "api": "Content Management API (published content types)"
+    },
+    "contentTypes": [
+        {
+            "id": "alert",
+            "name": "💬 Alert",
+            "description": "A content type to create messaging and alerts.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "message",
+                    "name": "Message",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": ["hyperlink", "embedded-entry-inline"],
+                            "message": "Only link to Url and inline entry nodes are allowed"
+                        },
+                        {
+                            "nodes": {
+                                "embedded-entry-inline": [
+                                    {
+                                        "linkContentType": ["nt_mergetag"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "max": 5
+                                        },
+                                        "message": null
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "type",
+                    "name": "Type",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "in": ["Info", "Warning", "Danger"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "Info"
+                    }
+                },
+                {
+                    "id": "nt_experiences",
+                    "name": "Experiences",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["nt_experience"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "appSettings",
+            "name": "⚙️ Global Settings",
+            "description": "A content type that stores global settings. Includes navigation, announcements, token storage, and more.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "siteName",
+                    "name": "Site Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "siteTitle",
+                    "name": "Site Title",
+                    "type": "Symbol",
+                    "defaultValue": {
+                        "en-US": "Colorful Coin"
+                    }
+                },
+                {
+                    "id": "siteDescription",
+                    "name": "Site Description",
+                    "type": "Symbol",
+                    "defaultValue": {
+                        "en-US": "Coin is a one-stop platform for all your financial, banking, and shopping needs. Enjoy award winning app and premium services of the industry leader of the future."
+                    }
+                },
+                {
+                    "id": "lightThemeOnly",
+                    "name": "Light Theme Only",
+                    "type": "Boolean",
+                    "defaultValue": {
+                        "en-US": true
+                    }
+                },
+                {
+                    "id": "logo",
+                    "name": "Logo",
+                    "type": "Link",
+                    "linkType": "Asset"
+                },
+                {
+                    "id": "logoAlt",
+                    "name": "Logo (alt)",
+                    "type": "Link",
+                    "linkType": "Asset"
+                },
+                {
+                    "id": "logoIcon",
+                    "name": "Logo (icon)",
+                    "type": "Link",
+                    "linkType": "Asset"
+                },
+                {
+                    "id": "logoTarget",
+                    "name": "Logo Target",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["landingPage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "tagline",
+                    "name": "Tagline",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "availabilityMessage",
+                    "name": "Availability Message",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "availabilityButtonLabel",
+                    "name": "Availability Button Label",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "showAvailabilityButton",
+                    "name": "Show Availability Button",
+                    "type": "Boolean"
+                },
+                {
+                    "id": "googleFontPicker",
+                    "name": "Custom Font",
+                    "type": "Object"
+                },
+                {
+                    "id": "colorTokens",
+                    "name": "Color Tokens",
+                    "type": "Object"
+                },
+                {
+                    "id": "announcement",
+                    "name": "Announcement",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 1
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["alert"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "defaultSeo",
+                    "name": "Default SEO",
+                    "type": "Link",
+                    "required": true,
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "primaryNavigation",
+                    "name": "Primary Navigation",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "min": null,
+                                "max": 6
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["navigation"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "footerNavigation",
+                    "name": "Footer Navigation",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["navigation"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "title",
+                    "name": "Title (Deprecated)",
+                    "type": "Symbol",
+                    "disabled": true,
+                    "omitted": true
+                },
+                {
+                    "id": "navigation",
+                    "name": "Navigation (Deprecated)",
+                    "type": "Object",
+                    "localized": true,
+                    "disabled": true,
+                    "omitted": true
+                },
+                {
+                    "id": "footer",
+                    "name": "Footer",
+                    "type": "Object",
+                    "localized": true,
+                    "disabled": true,
+                    "omitted": true
+                },
+                {
+                    "id": "defaultCta",
+                    "name": "Default CTA",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["callToAction"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "storeCurrencies",
+                    "name": "Store Currencies",
+                    "type": "Object"
+                },
+                {
+                    "id": "storeRootCategories",
+                    "name": "Store Root Categories",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 4
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["productCategory"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "login",
+                    "name": "Login",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["link"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "logout",
+                    "name": "Logout",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["link"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "assetWrapper",
+            "name": "📁 Asset Wrapper",
+            "description": "A content type to support various media types.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "caption",
+                    "name": "Caption",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "asset",
+                    "name": "Asset",
+                    "type": "Link",
+                    "required": true,
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "youTubeVideo", "wistiaVideo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "banner",
+            "name": "💬 Banner",
+            "description": "A content type to create editorial messaging that guides a user to other areas of the experience. It allows for more presentational configuration than CTA.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "heading",
+                    "name": "Heading",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "body",
+                    "name": "Body",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        },
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": [],
+                            "message": "Nodes are not allowed"
+                        },
+                        {
+                            "nodes": {
+                                "embedded-entry-block": [
+                                    {
+                                        "linkContentType": ["callToAction"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 10
+                                        },
+                                        "message": null
+                                    }
+                                ],
+                                "embedded-entry-inline": [
+                                    {
+                                        "linkContentType": ["nt_mergetag"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 5
+                                        },
+                                        "message": null
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "links",
+                    "name": "Links",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 2
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["link"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "wistiaVideo", "youTubeVideo", "externalImage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "nt_experiences",
+                    "name": "Experiences",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "min": null,
+                                "max": 10
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["nt_experience"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "contentPosition",
+                    "name": "Content Position",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": [
+                                "top-left",
+                                "top-center",
+                                "top-right",
+                                "middle-left",
+                                "middle-center",
+                                "middle-right",
+                                "bottom-left",
+                                "bottom-center",
+                                "bottom-right"
+                            ]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "middle-left"
+                    }
+                },
+                {
+                    "id": "mediaPosition",
+                    "name": "Media Position",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["Background", "Left Half", "Right Half"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "Right Half"
+                    }
+                },
+                {
+                    "id": "theme",
+                    "name": "Theme",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["Default", "Primary", "Secondary"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "Primary"
+                    }
+                },
+                {
+                    "id": "size",
+                    "name": "Size",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["Large", "Medium", "Small", "Full Height"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "Medium"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "benefit",
+            "name": "✅ Benefit",
+            "description": "A content type to create features and benefits of products and services.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "benefit",
+                    "name": "Benefit",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "icon",
+                    "name": "Icon",
+                    "type": "Object"
+                },
+                {
+                    "id": "editorialImage",
+                    "name": "Editorial Image",
+                    "type": "Link",
+                    "localized": true,
+                    "linkType": "Asset"
+                }
+            ]
+        },
+        {
+            "id": "blogPost",
+            "name": "📄 Blog Post",
+            "description": "A content type to create blog posts.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": null
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "teaser",
+                    "name": "Teaser",
+                    "type": "Text",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "externalImage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "body",
+                    "name": "Body",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": [
+                                "heading-2",
+                                "heading-3",
+                                "heading-4",
+                                "heading-5",
+                                "heading-6",
+                                "unordered-list",
+                                "ordered-list",
+                                "blockquote",
+                                "hr",
+                                "table",
+                                "hyperlink",
+                                "entry-hyperlink",
+                                "asset-hyperlink",
+                                "embedded-entry-block",
+                                "embedded-entry-inline",
+                                "embedded-asset-block"
+                            ],
+                            "message": "Only heading 2, heading 3, heading 4, heading 5, heading 6, Unordered list, ordered list, quote, horizontal rule, table, link to Url, link to entry, link to asset, block entry, inline entry, and asset nodes are allowed"
+                        },
+                        {
+                            "nodes": {
+                                "asset-hyperlink": [
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 10
+                                        },
+                                        "message": null
+                                    }
+                                ],
+                                "embedded-entry-block": [
+                                    {
+                                        "linkContentType": ["callToAction", "customerReview", "quote", "mediaMention"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 5
+                                        },
+                                        "message": null
+                                    }
+                                ],
+                                "embedded-entry-inline": [
+                                    {
+                                        "linkContentType": ["nt_mergetag"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 5
+                                        },
+                                        "message": null
+                                    }
+                                ],
+                                "entry-hyperlink": [
+                                    {
+                                        "linkContentType": ["callToAction", "customerReview", "quote", "mediaMention"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 5
+                                        },
+                                        "message": null
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "author",
+                    "name": "Author",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 3
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["person"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "relatedPosts",
+                    "name": "Related posts",
+                    "type": "Array",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 3
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["blogPost"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "cta",
+                    "name": "CTA",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["callToAction"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "brazeConfig",
+            "name": "brazeConfig",
+            "description": "Content Type used by the Braze app. Do not delete or modify manually.",
+            "displayField": null,
+            "fields": [
+                {
+                    "id": "connectedFields",
+                    "name": "connectedFields",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "id": "callToAction",
+            "name": "💬 Call to Action",
+            "description": "A content type to create editorial messaging that guide a user to other areas of the experience.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "heading",
+                    "name": "Heading",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "body",
+                    "name": "Body",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": ["embedded-entry-inline", "embedded-entry-block"],
+                            "message": "Only inline entry and block entry nodes are allowed"
+                        },
+                        {
+                            "nodes": {
+                                "embedded-entry-block": [
+                                    {
+                                        "linkContentType": ["callToAction"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 10
+                                        },
+                                        "message": null
+                                    }
+                                ],
+                                "embedded-entry-inline": [
+                                    {
+                                        "linkContentType": ["nt_mergetag"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 5
+                                        },
+                                        "message": null
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "externalImage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "label",
+                    "name": "Label",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "internalTarget",
+                    "name": "Internal target",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": [
+                                "blogPost",
+                                "policy",
+                                "supportArticle",
+                                "event",
+                                "studioLandingPage",
+                                "landingPage",
+                                "product"
+                            ]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "urlTarget",
+                    "name": "URL target",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "dataProvider",
+                    "name": "Data Provider",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["sapProductDataProvider"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "nt_experiences",
+                    "name": "Experiences",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "min": null,
+                                "max": 10
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["nt_experience"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "coinProduct",
+            "name": "🛍️ External Product",
+            "description": "A content type to manage the Coin product line.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "productName",
+                    "name": "Product Name",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "sku",
+                    "name": "SKU",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": null
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "editorialThumbnail",
+                    "name": "Editorial Thumbnail",
+                    "type": "Link",
+                    "localized": true,
+                    "linkType": "Asset"
+                },
+                {
+                    "id": "teaser",
+                    "name": "Teaser",
+                    "type": "Text",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "collection",
+            "name": "🗂️ Collection",
+            "description": "",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "heading",
+                    "name": "Heading",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "introduction",
+                    "name": "Introduction",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledMarks": ["bold", "italic", "underline", "strikethrough"],
+                            "message": "Only bold, italic, underline, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": ["embedded-asset-block", "embedded-entry-inline"],
+                            "message": "Only asset and inline entry nodes are allowed"
+                        },
+                        {
+                            "nodes": {
+                                "asset-hyperlink": [
+                                    {
+                                        "size": {
+                                            "max": 10
+                                        },
+                                        "message": null
+                                    }
+                                ],
+                                "embedded-entry-inline": [
+                                    {
+                                        "linkContentType": ["nt_mergetag"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "max": 5
+                                        },
+                                        "message": null
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "items",
+                    "name": "Items",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 12
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": [
+                                    "benefit",
+                                    "callToAction",
+                                    "customerReview",
+                                    "faqItem",
+                                    "mediaMention",
+                                    "quote",
+                                    "blogPost",
+                                    "policy",
+                                    "supportArticle",
+                                    "company",
+                                    "person",
+                                    "link",
+                                    "stats",
+                                    "landingPage",
+                                    "assetWrapper",
+                                    "storeLocation",
+                                    "product",
+                                    "productCategory",
+                                    "form",
+                                    "banner"
+                                ]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "links",
+                    "name": "Links",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 2
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["link"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "theme",
+                    "name": "Theme",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["Default", "Primary", "Secondary"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "Default"
+                    }
+                },
+                {
+                    "id": "layout",
+                    "name": "Layout",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["Grid", "Stack", "Accordion", "Carousel (Full)", "Carousel (Multi)"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "Grid"
+                    }
+                },
+                {
+                    "id": "nt_experiences",
+                    "name": "Experiences",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["nt_experience"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "company",
+            "name": "🏢 Company",
+            "description": "A content type to store information related to specific companies & media outlets.",
+            "displayField": "name",
+            "fields": [
+                {
+                    "id": "name",
+                    "name": "Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "logo",
+                    "name": "Logo",
+                    "type": "Link",
+                    "linkType": "Asset"
+                },
+                {
+                    "id": "logoAlt",
+                    "name": "Logo (Alt)",
+                    "type": "Link",
+                    "linkType": "Asset"
+                }
+            ]
+        },
+        {
+            "id": "customerReview",
+            "name": "💬 Customer Review",
+            "description": "A content type to create customer reviews for products, locations, or services.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "rating",
+                    "name": "Rating",
+                    "type": "Integer"
+                },
+                {
+                    "id": "review",
+                    "name": "Review",
+                    "type": "RichText",
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": ["hyperlink"],
+                            "message": "Only link to Url nodes are allowed"
+                        },
+                        {
+                            "nodes": {}
+                        }
+                    ]
+                },
+                {
+                    "id": "attribution",
+                    "name": "Attribution",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["person"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "dynamicCollection",
+            "name": "🗂️ Dynamic Collection",
+            "description": "Dynamically query for content based on parameters provided.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "heading",
+                    "name": "Heading",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "introduction",
+                    "name": "Introduction",
+                    "type": "RichText",
+                    "validations": [
+                        {
+                            "enabledMarks": ["bold", "italic", "underline", "strikethrough"],
+                            "message": "Only bold, italic, underline, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": ["embedded-entry-inline"],
+                            "message": "Only inline entry nodes are allowed"
+                        },
+                        {
+                            "nodes": {
+                                "embedded-entry-inline": [
+                                    {
+                                        "linkContentType": ["nt_mergetag"],
+                                        "message": null
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "links",
+                    "name": "Links",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 2
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["link"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "type",
+                    "name": "Type",
+                    "type": "Array",
+                    "required": true,
+                    "items": {
+                        "type": "Symbol",
+                        "validations": [
+                            {
+                                "in": [
+                                    "Blog Post",
+                                    "Event",
+                                    "Landing Page",
+                                    "Person",
+                                    "Policy",
+                                    "Product",
+                                    "Product Category",
+                                    "Store Location",
+                                    "Support Article",
+                                    "Support Article Category"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "limit",
+                    "name": "Limit",
+                    "type": "Integer",
+                    "required": true,
+                    "validations": [
+                        {
+                            "range": {
+                                "min": 0
+                            }
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": 3
+                    }
+                },
+                {
+                    "id": "include",
+                    "name": "Include",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": [
+                                    "blogPost",
+                                    "policy",
+                                    "event",
+                                    "person",
+                                    "storeLocation",
+                                    "supportArticleCategory",
+                                    "landingPage",
+                                    "product",
+                                    "productCategory",
+                                    "supportArticle"
+                                ]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "exclude",
+                    "name": "Exclude",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": [
+                                    "blogPost",
+                                    "policy",
+                                    "event",
+                                    "person",
+                                    "storeLocation",
+                                    "supportArticleCategory",
+                                    "landingPage",
+                                    "product",
+                                    "productCategory",
+                                    "supportArticle"
+                                ]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "theme",
+                    "name": "Theme",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["Default", "Primary", "Secondary"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "Default"
+                    }
+                },
+                {
+                    "id": "displayOrder",
+                    "name": "Display Order",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["Newest First", "Oldest First"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "Newest First"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "dynamicListingPage",
+            "name": "📄 Dynamic Listing Page",
+            "description": "A content type to assemble dynamic listing pages for a specific content type",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": null
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "teaser",
+                    "name": "Teaser",
+                    "type": "Text",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "externalImage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "hero",
+                    "name": "Hero",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["callToAction", "banner"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "listingType",
+                    "name": "Listing Type",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "in": ["blogPost", "policy", "event", "person", "supportArticleCategory", "storeLocation"]
+                        }
+                    ]
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "additionalSections",
+                    "name": "Additional Sections",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["banner", "callToAction", "collection"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "event",
+            "name": "🗓️ Event",
+            "description": "A content type to manage various events.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": null
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "subtitle",
+                    "name": "Subtitle",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "Text",
+                    "localized": true
+                },
+                {
+                    "id": "teaser",
+                    "name": "Teaser",
+                    "type": "Text",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "externalImage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "indexing",
+                    "name": "Indexing",
+                    "type": "Boolean"
+                },
+                {
+                    "id": "registrationForm",
+                    "name": "Registration Form",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["salesforceForm", "form"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "formFallback",
+                    "name": "Form Fallback",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["formStatus"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "place",
+                    "name": "Place",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["place"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "format",
+                    "name": "Format",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "in": ["In person", "Online", "Webinar", "Partner event"]
+                        }
+                    ]
+                },
+                {
+                    "id": "startsAt",
+                    "name": "Starts At",
+                    "type": "Date",
+                    "required": true
+                },
+                {
+                    "id": "duration",
+                    "name": "Duration",
+                    "type": "Integer"
+                },
+                {
+                    "id": "timezone",
+                    "name": "Timezone",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "status",
+                    "name": "Status",
+                    "type": "Symbol",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "in": ["Sold out", "Waiting list", "Cancelled", "Postponed"]
+                        }
+                    ]
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "cta",
+                    "name": "CTA",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["callToAction"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "externalImage",
+            "name": "📷 External Image",
+            "description": "Select an image from a DAM (Bynder)",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "image",
+                    "name": "Image",
+                    "type": "Object",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "faqItem",
+            "name": "💬 FAQ Item",
+            "description": "A content type to store question answer pairs with metadata markup.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "theme",
+                    "name": "Theme",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["default", "primary", "secondary", "tertiary"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "default"
+                    }
+                },
+                {
+                    "id": "question",
+                    "name": "Question",
+                    "type": "Symbol",
+                    "localized": true,
+                    "required": true
+                },
+                {
+                    "id": "answer",
+                    "name": "Answer",
+                    "type": "RichText",
+                    "localized": true,
+                    "required": true,
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": [
+                                "heading-2",
+                                "heading-3",
+                                "heading-4",
+                                "heading-5",
+                                "heading-6",
+                                "ordered-list",
+                                "unordered-list",
+                                "hr",
+                                "blockquote",
+                                "table",
+                                "hyperlink",
+                                "asset-hyperlink",
+                                "embedded-asset-block",
+                                "embedded-entry-block",
+                                "embedded-entry-inline"
+                            ],
+                            "message": "Only heading 2, heading 3, heading 4, heading 5, heading 6, ordered list, Unordered list, horizontal rule, quote, table, link to Url, link to asset, asset, block entry, and inline entry nodes are allowed"
+                        },
+                        {
+                            "nodes": {
+                                "asset-hyperlink": [
+                                    {
+                                        "size": {
+                                            "max": 10
+                                        },
+                                        "message": null
+                                    }
+                                ],
+                                "embedded-asset-block": [
+                                    {
+                                        "size": {
+                                            "max": 10
+                                        },
+                                        "message": null
+                                    }
+                                ],
+                                "embedded-entry-block": [
+                                    {
+                                        "linkContentType": ["benefit", "customerReview", "mediaMention", "quote"],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 10
+                                        },
+                                        "message": null
+                                    }
+                                ],
+                                "embedded-entry-inline": [
+                                    {
+                                        "linkContentType": [
+                                            "benefit",
+                                            "customerReview",
+                                            "mediaMention",
+                                            "quote",
+                                            "nt_mergetag"
+                                        ],
+                                        "message": null
+                                    },
+                                    {
+                                        "size": {
+                                            "min": null,
+                                            "max": 10
+                                        },
+                                        "message": null
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "form",
+            "name": "⌨️ Form",
+            "description": "Create a form to capture input from end user. (This is mock form, it doesn't connect to send content to any destination)",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "heading",
+                    "name": "Heading",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "RichText",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        },
+                        {
+                            "enabledMarks": ["bold", "italic"],
+                            "message": "Only bold and italic marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": ["hyperlink"],
+                            "message": "Only link to Url nodes are allowed"
+                        },
+                        {
+                            "nodes": {}
+                        }
+                    ]
+                },
+                {
+                    "id": "fieldConfiguration",
+                    "name": "Field Configuration",
+                    "type": "Object",
+                    "localized": true,
+                    "required": true
+                },
+                {
+                    "id": "formSubmitLabel",
+                    "name": "Form Submit Label",
+                    "type": "Symbol",
+                    "localized": true,
+                    "required": true,
+                    "defaultValue": {
+                        "en-US": "Submit",
+                        "de-DE": "Einreichen"
+                    }
+                },
+                {
+                    "id": "successMessage",
+                    "name": "Success Message",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        },
+                        {
+                            "enabledMarks": ["bold", "italic"],
+                            "message": "Only bold and italic marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": ["hyperlink"],
+                            "message": "Only link to Url nodes are allowed"
+                        },
+                        {
+                            "nodes": {}
+                        }
+                    ]
+                },
+                {
+                    "id": "errorMessage",
+                    "name": "Error Message",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        },
+                        {
+                            "enabledMarks": ["bold", "italic"],
+                            "message": "Only bold and italic marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": ["hyperlink"],
+                            "message": "Only link to Url nodes are allowed"
+                        },
+                        {
+                            "nodes": {}
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "formStatus",
+            "name": "💎 Form Status",
+            "description": "A content type that can be used to show a success message or a fallback message as a replacement for a form.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "Text",
+                    "localized": true
+                },
+                {
+                    "id": "buttonLabel",
+                    "name": "Button label",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "internalTarget",
+                    "name": "Internal Target",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": [
+                                "blogPost",
+                                "dynamicListingPage",
+                                "event",
+                                "studioLandingPage",
+                                "landingPage"
+                            ]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "imageWithFocalPoint",
+            "name": "📷 Image with Focal Point",
+            "description": "Image with focal point",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "image",
+                    "name": "Image",
+                    "type": "Link",
+                    "required": true,
+                    "linkType": "Asset"
+                },
+                {
+                    "id": "focalPoint",
+                    "name": "Focal point",
+                    "type": "Object"
+                },
+                {
+                    "id": "altText",
+                    "name": "Alt Text",
+                    "type": "Symbol",
+                    "localized": true
+                }
+            ]
+        },
+        {
+            "id": "landingPage",
+            "name": "📄 Landing Page",
+            "description": "A content type to assemble landing pages",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "teaser",
+                    "name": "Teaser",
+                    "type": "Text",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": null
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        },
+                        {
+                            "prohibitRegexp": {
+                                "pattern": "^(store-category|store-location|listing|studio)(/|$)",
+                                "flags": null
+                            },
+                            "message": "A slug can NOT start with a reserved prefix. They are reserved for their matching content type. (Reserved prefixes are: blog, event, policy, product, store-category, support, store-location, listing, studio)"
+                        }
+                    ]
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "externalImage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "hero",
+                    "name": "Hero",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["callToAction", "banner"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "sections",
+                    "name": "Sections",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["collection", "callToAction", "banner", "dynamicCollection", "form"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "link",
+            "name": "🔗 Link",
+            "description": "",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "label",
+                    "name": "Label",
+                    "type": "Symbol",
+                    "localized": true,
+                    "required": true
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "Text",
+                    "localized": true
+                },
+                {
+                    "id": "icon",
+                    "name": "Icon",
+                    "type": "Object"
+                },
+                {
+                    "id": "internalTarget",
+                    "name": "Internal Target",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": [
+                                "studioLandingPage",
+                                "landingPage",
+                                "supportArticle",
+                                "policy",
+                                "blogPost",
+                                "event",
+                                "dynamicListingPage"
+                            ]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "externalTarget",
+                    "name": "External Target",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "regexp": {
+                                "pattern": "(^\\/[a-zA-Z0-9-/]*(\\?[a-zA-Z0-9=&%+._~-]*)?$)|(^(https?:\\/\\/)[\\w\\-]+(\\.[\\w\\-]+)+[/#?]?.*$)",
+                                "flags": null
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "eventType",
+                    "name": "Event Type",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "in": ["Identify", "Track"]
+                        }
+                    ]
+                },
+                {
+                    "id": "eventName",
+                    "name": "Event Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "eventPayload",
+                    "name": "Event Payload",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "id": "mediaMention",
+            "name": "💬 Media Mention",
+            "description": "A content type to create media mentions and reviews.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "quote",
+                    "name": "Quote",
+                    "type": "RichText",
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": [],
+                            "message": "Nodes are not allowed"
+                        },
+                        {
+                            "nodes": {}
+                        }
+                    ]
+                },
+                {
+                    "id": "source",
+                    "name": "Source",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["company"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "microcopy",
+            "name": "🎛️ Microcopy",
+            "description": "A content type to mangage storing values for tokens and strings.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "keyvaluePairs",
+                    "name": "Key/value pairs",
+                    "type": "Object",
+                    "localized": true
+                }
+            ]
+        },
+        {
+            "id": "navigation",
+            "name": "🧭 Navigation",
+            "description": "A content type used for hierarchical navigation schemes like header and footers.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "target",
+                    "name": "Target",
+                    "type": "Link",
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "label",
+                    "name": "Label",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "icon",
+                    "name": "Icon",
+                    "type": "Object"
+                },
+                {
+                    "id": "display",
+                    "name": "Display",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "in": ["Editorial", "Category", "Link", "Icon Group"]
+                        }
+                    ]
+                },
+                {
+                    "id": "children",
+                    "name": "Children",
+                    "type": "Array",
+                    "localized": true,
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": [
+                                    "blogPost",
+                                    "navigation",
+                                    "link",
+                                    "landingPage",
+                                    "studioLandingPage",
+                                    "dynamicListingPage"
+                                ]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "newsletter",
+            "name": "📨 Newsletter",
+            "description": "Dedicated content type for authoring newsletters that delivery as an email.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "subjectLine",
+                    "name": "Subject Line",
+                    "type": "Symbol",
+                    "localized": true,
+                    "required": true
+                },
+                {
+                    "id": "hero",
+                    "name": "Hero",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["banner", "callToAction"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "body",
+                    "name": "Body",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": [
+                                "heading-2",
+                                "heading-3",
+                                "heading-4",
+                                "unordered-list",
+                                "ordered-list",
+                                "blockquote",
+                                "hyperlink",
+                                "embedded-entry-block"
+                            ],
+                            "message": "Only heading 2, heading 3, heading 4, Unordered list, ordered list, quote, link to Url, and block entry nodes are allowed"
+                        },
+                        {
+                            "nodes": {
+                                "embedded-entry-block": [
+                                    {
+                                        "linkContentType": ["callToAction", "collection", "dynamicCollection", "quote"],
+                                        "message": null
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "nt_audience",
+            "name": "👥 Audience",
+            "description": "Group of people identified by a set of rules",
+            "displayField": "nt_name",
+            "fields": [
+                {
+                    "id": "nt_name",
+                    "name": "Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "nt_description",
+                    "name": "Description",
+                    "type": "Text"
+                },
+                {
+                    "id": "nt_rules",
+                    "name": "Rules",
+                    "type": "Object",
+                    "required": true
+                },
+                {
+                    "id": "nt_audience_id",
+                    "name": "Audience Id",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        }
+                    ]
+                },
+                {
+                    "id": "nt_metadata",
+                    "name": "Metadata",
+                    "type": "Object",
+                    "disabled": true
+                }
+            ]
+        },
+        {
+            "id": "nt_experience",
+            "name": "🧪 Experience",
+            "description": "Customize and tailor the content that is served to your users with personalization and experiments.",
+            "displayField": "nt_name",
+            "fields": [
+                {
+                    "id": "nt_name",
+                    "name": "Name",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        }
+                    ]
+                },
+                {
+                    "id": "nt_description",
+                    "name": "Description",
+                    "type": "Text"
+                },
+                {
+                    "id": "nt_type",
+                    "name": "Type",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["nt_experiment", "nt_personalization"]
+                        }
+                    ],
+                    "disabled": true
+                },
+                {
+                    "id": "nt_config",
+                    "name": "Config",
+                    "type": "Object",
+                    "required": true
+                },
+                {
+                    "id": "nt_audience",
+                    "name": "Audience",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["nt_audience"]
+                        }
+                    ],
+                    "disabled": true,
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "nt_variants",
+                    "name": "Variants",
+                    "type": "Array",
+                    "disabled": true,
+                    "items": {
+                        "type": "Link",
+                        "validations": [],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "nt_experience_id",
+                    "name": "Experience Id",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "unique": true
+                        }
+                    ]
+                },
+                {
+                    "id": "nt_metadata",
+                    "name": "Experience Metadata",
+                    "type": "Object",
+                    "disabled": true
+                }
+            ]
+        },
+        {
+            "id": "nt_mergetag",
+            "name": "🏷️ Merge Tag",
+            "description": "Dynamic placeholder that allow inserting personalized and variable content.",
+            "displayField": "nt_name",
+            "fields": [
+                {
+                    "id": "nt_name",
+                    "name": "Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "nt_fallback",
+                    "name": "Fallback",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "nt_mergetag_id",
+                    "name": "Merge Tag Id",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "person",
+            "name": "👤 Person",
+            "description": "A content type to store information related to leadership and authors.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "firstName",
+                    "name": "First Name",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "lastName",
+                    "name": "Last Name",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "role",
+                    "name": "Role",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "shortBio",
+                    "name": "Short Bio",
+                    "type": "Text",
+                    "localized": true
+                },
+                {
+                    "id": "avatar",
+                    "name": "Avatar",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkMimetypeGroup": ["image"]
+                        }
+                    ],
+                    "linkType": "Asset"
+                },
+                {
+                    "id": "company",
+                    "name": "Company",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 1
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["company"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "place",
+            "name": "📍 Place",
+            "description": "A content type to locations of e.g., stores or event venues.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "name",
+                    "name": "Name",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "coordinates",
+                    "name": "Coordinates",
+                    "type": "Location"
+                },
+                {
+                    "id": "address",
+                    "name": "Address",
+                    "type": "Symbol",
+                    "localized": true
+                }
+            ]
+        },
+        {
+            "id": "policy",
+            "name": "📄 Policy",
+            "description": "A content type to create legal articles and notations.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": null
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "effectiveDate",
+                    "name": "Effective Date",
+                    "type": "Date"
+                },
+                {
+                    "id": "updatedDate",
+                    "name": "Updated Date",
+                    "type": "Date"
+                },
+                {
+                    "id": "expirationDate",
+                    "name": "Expiration Date",
+                    "type": "Date"
+                },
+                {
+                    "id": "shortDescription",
+                    "name": "Short Description",
+                    "type": "Text",
+                    "localized": true
+                },
+                {
+                    "id": "body",
+                    "name": "Body",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": [
+                                "heading-2",
+                                "heading-3",
+                                "heading-4",
+                                "heading-5",
+                                "heading-6",
+                                "ordered-list",
+                                "unordered-list",
+                                "hr",
+                                "blockquote",
+                                "embedded-asset-block",
+                                "table",
+                                "asset-hyperlink",
+                                "embedded-entry-inline",
+                                "entry-hyperlink",
+                                "hyperlink",
+                                "embedded-entry-block"
+                            ],
+                            "message": "Only heading 2, heading 3, heading 4, heading 5, heading 6, ordered list, Unordered list, horizontal rule, quote, asset, table, link to asset, inline entry, link to entry, link to Url, and block entry nodes are allowed"
+                        },
+                        {
+                            "nodes": {}
+                        }
+                    ]
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "price",
+            "name": "🛍️ Price",
+            "description": "The price of a product in the e-commerce store in a certain currency.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "amount",
+                    "name": "Amount",
+                    "type": "Number",
+                    "required": true,
+                    "validations": [
+                        {
+                            "range": {
+                                "min": 0
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "currency",
+                    "name": "Currency",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["USD", "EUR"]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "product",
+            "name": "🛍️ Product",
+            "description": "A content type representing a product offered in the e-commerce store.",
+            "displayField": "name",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true,
+                    "disabled": true,
+                    "omitted": true
+                },
+                {
+                    "id": "name",
+                    "name": "Name",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": ""
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "sku",
+                    "name": "SKU",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["stockroomProduct"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "teaser",
+                    "name": "Teaser",
+                    "type": "Text",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "media",
+                    "name": "Featured Image",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "externalImage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "brand",
+                    "name": "Brand",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["company"]
+                        }
+                    ],
+                    "disabled": true,
+                    "omitted": true,
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledNodeTypes": [
+                                "heading-1",
+                                "heading-2",
+                                "heading-3",
+                                "heading-4",
+                                "heading-5",
+                                "heading-6",
+                                "ordered-list",
+                                "unordered-list",
+                                "hr",
+                                "blockquote",
+                                "embedded-entry-block",
+                                "embedded-asset-block",
+                                "table",
+                                "hyperlink",
+                                "entry-hyperlink",
+                                "asset-hyperlink",
+                                "embedded-entry-inline"
+                            ],
+                            "message": "Only heading 1, heading 2, heading 3, heading 4, heading 5, heading 6, ordered list, Unordered list, horizontal rule, quote, block entry, asset, table, link to Url, link to entry, link to asset, and inline entry nodes are allowed"
+                        },
+                        {
+                            "nodes": {}
+                        },
+                        {
+                            "enabledMarks": ["bold", "italic", "underline", "code"],
+                            "message": "Only bold, italic, underline, and code marks are allowed"
+                        }
+                    ]
+                },
+                {
+                    "id": "images",
+                    "name": "Images",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [],
+                        "linkType": "Asset"
+                    }
+                },
+                {
+                    "id": "price",
+                    "name": "Price",
+                    "type": "Array",
+                    "disabled": true,
+                    "omitted": true,
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["price"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "categories",
+                    "name": "Categories",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["productCategory"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "additionalSections",
+                    "name": "Additional Sections",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 10
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["callToAction", "collection", "banner", "dynamicCollection"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "descriptionRt",
+                    "name": "Description (Rich Text)",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledNodeTypes": [
+                                "heading-1",
+                                "heading-2",
+                                "heading-3",
+                                "heading-4",
+                                "heading-5",
+                                "heading-6",
+                                "ordered-list",
+                                "unordered-list",
+                                "hr",
+                                "blockquote",
+                                "embedded-entry-block",
+                                "embedded-asset-block",
+                                "hyperlink",
+                                "entry-hyperlink",
+                                "asset-hyperlink",
+                                "embedded-entry-inline"
+                            ],
+                            "message": "Only heading 1, heading 2, heading 3, heading 4, heading 5, heading 6, ordered list, Unordered list, horizontal rule, quote, block entry, asset, link to Url, link to entry, link to asset, and inline entry nodes are allowed"
+                        },
+                        {
+                            "enabledMarks": ["bold", "italic", "underline", "code"],
+                            "message": "Only bold, italic, underline, and code marks are allowed"
+                        }
+                    ],
+                    "disabled": true,
+                    "omitted": true
+                }
+            ]
+        },
+        {
+            "id": "productCategory",
+            "name": "🛍️ Product Category",
+            "description": "Content type that helps organizing products into categories in the e-commerce store",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true,
+                    "required": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": ""
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "Text",
+                    "localized": true
+                },
+                {
+                    "id": "subcategories",
+                    "name": "Subcategories",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["productCategory"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "promotionalOffer",
+            "name": "🏷️ Promotional Offer",
+            "description": "Time-bounded promotional offers with discount logic, applicable products, and personalization audience targeting.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "title",
+                    "name": "Offer Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "promoCode",
+                    "name": "Promo Code",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "discountType",
+                    "name": "Discount Type",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "in": ["Percent Off", "Free Shipping", "BOGO", "Fixed Amount Off", "Gift with Purchase"]
+                        }
+                    ]
+                },
+                {
+                    "id": "discountValue",
+                    "name": "Discount Value",
+                    "type": "Number"
+                },
+                {
+                    "id": "validFrom",
+                    "name": "Valid From",
+                    "type": "Date"
+                },
+                {
+                    "id": "validUntil",
+                    "name": "Valid Until",
+                    "type": "Date"
+                },
+                {
+                    "id": "applicableProducts",
+                    "name": "Applicable Products",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["product"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "applicableCategories",
+                    "name": "Applicable Categories",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["productCategory"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "bannerContent",
+                    "name": "Banner Content",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["banner", "callToAction"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "minimumOrderValue",
+                    "name": "Minimum Order Value",
+                    "type": "Number"
+                },
+                {
+                    "id": "targetAudience",
+                    "name": "Target Audience",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["nt_audience"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "nt_experiences",
+                    "name": "Experiences",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["nt_experience"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "isActive",
+                    "name": "Is Active",
+                    "type": "Boolean"
+                }
+            ]
+        },
+        {
+            "id": "quote",
+            "name": "💬 Quote",
+            "description": "A content type to create quotes.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "theme",
+                    "name": "Theme",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "in": ["default", "primary", "secondary", "tertiary"]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "default"
+                    }
+                },
+                {
+                    "id": "quote",
+                    "name": "Quote",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": ["hyperlink"],
+                            "message": "Only link to Url nodes are allowed"
+                        },
+                        {
+                            "nodes": {}
+                        }
+                    ]
+                },
+                {
+                    "id": "author",
+                    "name": "Author",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["person"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "recipe",
+            "name": "🍳 Recipe",
+            "description": "Editorial recipe content with structured ingredient cross-links to Coppervine products.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": ""
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only."
+                        }
+                    ]
+                },
+                {
+                    "id": "teaser",
+                    "name": "Teaser",
+                    "type": "Text",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "linkType": "Asset"
+                },
+                {
+                    "id": "prepTime",
+                    "name": "Prep Time (minutes)",
+                    "type": "Integer"
+                },
+                {
+                    "id": "cookTime",
+                    "name": "Cook Time (minutes)",
+                    "type": "Integer"
+                },
+                {
+                    "id": "servings",
+                    "name": "Servings",
+                    "type": "Integer"
+                },
+                {
+                    "id": "difficulty",
+                    "name": "Difficulty",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "in": ["Easy", "Medium", "Advanced"]
+                        }
+                    ]
+                },
+                {
+                    "id": "featuredProducts",
+                    "name": "Featured Products",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["product"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "ingredients",
+                    "name": "Ingredients",
+                    "type": "RichText",
+                    "localized": true
+                },
+                {
+                    "id": "instructions",
+                    "name": "Instructions",
+                    "type": "RichText",
+                    "localized": true
+                },
+                {
+                    "id": "author",
+                    "name": "Author",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["person"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "relatedRecipes",
+                    "name": "Related Recipes",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["recipe"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "redirect",
+            "name": "🔗 Redirect",
+            "description": "A content type to manage content redirects for URLs and search terms.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "redirectOrigin",
+                    "name": "Origin (From)",
+                    "type": "Array",
+                    "localized": true,
+                    "items": {
+                        "type": "Link",
+                        "validations": [],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "redirectDestination",
+                    "name": "Destination (To)",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "redirectType",
+                    "name": "Redirect Type",
+                    "type": "Symbol",
+                    "validations": [
+                        {
+                            "in": [
+                                "Vanity URL",
+                                "Internal Search Redirect",
+                                "Temporary Redirect (302)",
+                                "Permanent Redirect (301)"
+                            ]
+                        }
+                    ],
+                    "defaultValue": {
+                        "en-US": "Vanity URL"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "salesforceForm",
+            "name": "💎 Salesforce form",
+            "description": "A wrapper content type for embedding Salesforce web-to-lead forms in Contentful",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "Symbol",
+                    "localized": true,
+                    "defaultValue": {
+                        "en-US": "Let us know who is joining"
+                    }
+                },
+                {
+                    "id": "formFields",
+                    "name": "Form Fields",
+                    "type": "Object"
+                },
+                {
+                    "id": "buttonLabel",
+                    "name": "Button label",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "postSubmissionMessage",
+                    "name": "Post Submission Message",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["formStatus"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "sapProductDataProvider",
+            "name": "SAP Product Data Provider",
+            "description": "This supports adding product data from SAP to another content type.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "data",
+                    "name": "Data",
+                    "type": "Object",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "seo",
+            "name": "🔍 SEO",
+            "description": "A content type to support Open Graph (OG) meta tags for optimizing search engine visibility.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "Text",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "min": null,
+                                "max": 260
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "keywords",
+                    "name": "Keywords",
+                    "type": "Array",
+                    "localized": true,
+                    "items": {
+                        "type": "Symbol",
+                        "validations": []
+                    }
+                },
+                {
+                    "id": "image",
+                    "name": "Image",
+                    "type": "Link",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "linkMimetypeGroup": ["image"]
+                        }
+                    ],
+                    "linkType": "Asset"
+                },
+                {
+                    "id": "imageAlt",
+                    "name": "Image Alt",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "robots",
+                    "name": "Robots",
+                    "type": "Array",
+                    "items": {
+                        "type": "Symbol",
+                        "validations": [
+                            {
+                                "in": ["noindex", "nofollow", "nosnippet", "notranslate", "noimageindex"]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "sitemap",
+                    "name": "Sitemap",
+                    "type": "Boolean",
+                    "defaultValue": {
+                        "en-US": true
+                    }
+                }
+            ]
+        },
+        {
+            "id": "stats",
+            "name": "📈 Stats",
+            "description": "",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "value",
+                    "name": "Value",
+                    "type": "Symbol",
+                    "localized": true,
+                    "required": true
+                },
+                {
+                    "id": "label",
+                    "name": "Label",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "editorialThumbnail",
+                    "name": "Editorial Thumbnail",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkMimetypeGroup": ["image"],
+                            "message": "Please choose a valid Image (JPG, PNG, etc.)"
+                        }
+                    ],
+                    "linkType": "Asset"
+                }
+            ]
+        },
+        {
+            "id": "stockroomProduct",
+            "name": "🛍️ Stockroom Product",
+            "description": "A Stockroom product managed by Stockroom.",
+            "displayField": "title",
+            "fields": [
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "externalId",
+                    "name": "External ID",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "images",
+                    "name": "Images",
+                    "type": "Array",
+                    "items": {
+                        "type": "Symbol",
+                        "validations": []
+                    }
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "RichText",
+                    "validations": [
+                        {
+                            "enabledNodeTypes": [
+                                "heading-1",
+                                "heading-2",
+                                "heading-3",
+                                "heading-4",
+                                "heading-5",
+                                "heading-6",
+                                "ordered-list",
+                                "unordered-list",
+                                "hr",
+                                "blockquote",
+                                "embedded-entry-block",
+                                "embedded-asset-block",
+                                "hyperlink",
+                                "entry-hyperlink",
+                                "asset-hyperlink",
+                                "embedded-entry-inline"
+                            ],
+                            "message": "Only heading 1, heading 2, heading 3, heading 4, heading 5, heading 6, ordered list, Unordered list, horizontal rule, quote, block entry, asset, link to Url, link to entry, link to asset, and inline entry nodes are allowed"
+                        },
+                        {
+                            "enabledMarks": ["bold", "italic", "underline", "code"],
+                            "message": "Only bold, italic, underline, and code marks are allowed"
+                        }
+                    ]
+                },
+                {
+                    "id": "price",
+                    "name": "Price",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "currencyCode",
+                    "name": "Currency Code",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "vendor",
+                    "name": "Vendor",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "totalInventory",
+                    "name": "Total Inventory",
+                    "type": "Integer"
+                },
+                {
+                    "id": "collections",
+                    "name": "Collections",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["productCategory"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "storeLocation",
+            "name": "📍 Store Location",
+            "description": "A content type to manage store locations.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "name",
+                    "name": "Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": null
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "teaser",
+                    "name": "Teaser",
+                    "type": "Symbol",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "externalImage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "place",
+                    "name": "Place",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["place"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "phone",
+                    "name": "Phone",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "email",
+                    "name": "Email",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "operatingHours",
+                    "name": "Operating Hours",
+                    "type": "Object"
+                },
+                {
+                    "id": "editorialDescription",
+                    "name": "Editorial Description",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": [
+                                "heading-1",
+                                "heading-2",
+                                "heading-3",
+                                "heading-4",
+                                "heading-5",
+                                "heading-6",
+                                "ordered-list",
+                                "unordered-list",
+                                "hr",
+                                "blockquote",
+                                "embedded-entry-block",
+                                "embedded-asset-block",
+                                "table",
+                                "asset-hyperlink",
+                                "embedded-entry-inline",
+                                "entry-hyperlink",
+                                "hyperlink"
+                            ],
+                            "message": "Only heading 1, heading 2, heading 3, heading 4, heading 5, heading 6, ordered list, unordered list, horizontal rule, quote, block entry, asset, table, link to asset, inline entry, link to entry, and link to Url nodes are allowed"
+                        },
+                        {
+                            "nodes": {}
+                        }
+                    ]
+                },
+                {
+                    "id": "services",
+                    "name": "Services",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 12
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["benefit"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "reviews",
+                    "name": "Reviews",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "min": null,
+                                "max": 10
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["customerReview", "quote", "mediaMention", "collection"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "staff",
+                    "name": "Staff",
+                    "type": "Array",
+                    "validations": [
+                        {
+                            "size": {
+                                "min": null,
+                                "max": 10
+                            }
+                        }
+                    ],
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["person"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "studioLandingPage",
+            "name": "📄 Studio: Landing Page",
+            "description": "",
+            "displayField": "title",
+            "fields": [
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        }
+                    ]
+                },
+                {
+                    "id": "componentTree",
+                    "name": "Component Tree",
+                    "type": "Object",
+                    "required": true
+                },
+                {
+                    "id": "dataSource",
+                    "name": "Data Source",
+                    "type": "Object",
+                    "required": true
+                },
+                {
+                    "id": "unboundValues",
+                    "name": "Unbound Values",
+                    "type": "Object",
+                    "required": true
+                },
+                {
+                    "id": "componentSettings",
+                    "name": "Component Settings",
+                    "type": "Object"
+                },
+                {
+                    "id": "usedComponents",
+                    "name": "Used Components",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["studioLandingPage"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "supportArticle",
+            "name": "📄 Support Article",
+            "description": "A content type to create support articles for the help center.",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol"
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": null
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "teaser",
+                    "name": "Teaser",
+                    "type": "Text",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "size": {
+                                "max": 500
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "body",
+                    "name": "Body",
+                    "type": "RichText",
+                    "localized": true,
+                    "validations": [
+                        {
+                            "enabledMarks": [
+                                "bold",
+                                "italic",
+                                "underline",
+                                "code",
+                                "superscript",
+                                "subscript",
+                                "strikethrough"
+                            ],
+                            "message": "Only bold, italic, underline, code, superscript, subscript, and strikethrough marks are allowed"
+                        },
+                        {
+                            "enabledNodeTypes": [
+                                "heading-1",
+                                "heading-2",
+                                "heading-3",
+                                "heading-4",
+                                "heading-5",
+                                "heading-6",
+                                "ordered-list",
+                                "unordered-list",
+                                "hr",
+                                "blockquote",
+                                "embedded-entry-block",
+                                "embedded-asset-block",
+                                "table",
+                                "asset-hyperlink",
+                                "embedded-entry-inline",
+                                "entry-hyperlink",
+                                "hyperlink"
+                            ],
+                            "message": "Only heading 1, heading 2, heading 3, heading 4, heading 5, heading 6, ordered list, unordered list, horizontal rule, quote, block entry, asset, table, link to asset, inline entry, link to entry, and link to Url nodes are allowed"
+                        },
+                        {
+                            "nodes": {}
+                        }
+                    ]
+                },
+                {
+                    "id": "icon",
+                    "name": "Icon",
+                    "type": "Object"
+                },
+                {
+                    "id": "media",
+                    "name": "Media",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["imageWithFocalPoint", "externalImage"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "category",
+                    "name": "Category",
+                    "type": "Array",
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["supportArticleCategory"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                },
+                {
+                    "id": "relatedArticles",
+                    "name": "Related Articles",
+                    "type": "Array",
+                    "localized": true,
+                    "items": {
+                        "type": "Link",
+                        "validations": [
+                            {
+                                "linkContentType": ["supportArticle"]
+                            }
+                        ],
+                        "linkType": "Entry"
+                    }
+                },
+                {
+                    "id": "cta",
+                    "name": "CTA",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["callToAction"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "supportArticleCategory",
+            "name": "🔠 Support Article Category",
+            "description": "This can be used to group support articles in different categories",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "title",
+                    "name": "Title",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "slug",
+                    "name": "Slug",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "unique": true
+                        },
+                        {
+                            "regexp": {
+                                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$",
+                                "flags": ""
+                            },
+                            "message": "Slug must be lowercase letters, numbers, and hyphens only. No leading or trailing /"
+                        }
+                    ]
+                },
+                {
+                    "id": "description",
+                    "name": "Description",
+                    "type": "Symbol",
+                    "localized": true
+                },
+                {
+                    "id": "icon",
+                    "name": "Icon",
+                    "type": "Object"
+                },
+                {
+                    "id": "seoMetadata",
+                    "name": "SEO Metadata",
+                    "type": "Link",
+                    "validations": [
+                        {
+                            "linkContentType": ["seo"]
+                        }
+                    ],
+                    "linkType": "Entry"
+                }
+            ]
+        },
+        {
+            "id": "wistiaVideo",
+            "name": "🎥 Wistia Video",
+            "description": "Attach or upload videos with Wistia",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "video",
+                    "name": "Video",
+                    "type": "Object",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "youTubeVideo",
+            "name": "🎥 YouTube Video",
+            "description": "YouTube video",
+            "displayField": "internalName",
+            "fields": [
+                {
+                    "id": "internalName",
+                    "name": "Internal Name",
+                    "type": "Symbol",
+                    "required": true
+                },
+                {
+                    "id": "url",
+                    "name": "URL",
+                    "type": "Symbol",
+                    "required": true,
+                    "validations": [
+                        {
+                            "regexp": {
+                                "pattern": "^https:\\/\\/(?:www\\.)?(?:youtube\\.com\\/watch\\?v=|youtu\\.be\\/)([A-Za-z0-9_-]{11})(?:.*?[?&]t=([0-9]+)s?)?$",
+                                "flags": null
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
