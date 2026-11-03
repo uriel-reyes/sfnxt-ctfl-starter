@@ -22,15 +22,20 @@ import { type Brand, belongsToBrand, brandFor, candidateSlugs, contentName, entr
 import { type ContentfulClient, queryContentful } from './client.server';
 import { isContentfulPreview } from './preview.server';
 import { breakCycles, normalizeExperienceIds, stripStega } from './live-preview';
-import type {
-    BrandTab,
-    CfEntry,
-    CompanyFields,
-    PersonalizationPreviewData,
-    LandingPageFields,
-    NavigationFields,
-    ProductCategoryFields,
-    ProductFields,
+import { dynamicCollectionTypes, mergeDynamicItems } from './blog';
+import {
+    contentTypeId,
+    type BlogPostFields,
+    type BrandTab,
+    type CfEntry,
+    type CompanyFields,
+    type DynamicCollectionFields,
+    type DynamicListingPageFields,
+    type PersonalizationPreviewData,
+    type LandingPageFields,
+    type NavigationFields,
+    type ProductCategoryFields,
+    type ProductFields,
 } from './types';
 
 /**
@@ -137,6 +142,95 @@ export async function getCategoryProducts(
         return items.filter((item) => belongsToBrand(item, req.brand));
     });
     return result ?? [];
+}
+
+/** Upper bound for brand-wide listings (blog index, dynamic collections). */
+const MAX_LISTING = 100;
+
+/** The brand's entries of one type, newest first (by creation date: the model has no publish-date field). */
+async function getBrandEntries<T extends Record<string, unknown>>(
+    args: Args,
+    req: ContentRequest,
+    contentType: string,
+    include: number
+): Promise<CfEntry<T>[]> {
+    const result = await run(args, req, `latest:${contentType}:${req.brand.siteId}`, async (client) => {
+        const items = await getEntries<T>(client, {
+            content_type: contentType,
+            'fields.internalName[match]': contentName(req.brand),
+            order: '-sys.createdAt',
+            include,
+            limit: MAX_LISTING,
+        });
+        return items.filter((item) => belongsToBrand(item, req.brand));
+    });
+    return result ?? [];
+}
+
+/** A brand blog post by URL segment, with its authors, embedded entries, CTA and related posts. */
+export function getBlogPost(args: Args, req: ContentRequest, segment: string) {
+    return findBySlug<BlogPostFields>(args, req, 'blogPost', segment, 4);
+}
+
+/** The brand's blog posts, newest first. */
+export function getBlogPosts(args: Args, req: ContentRequest): Promise<CfEntry<BlogPostFields>[]> {
+    return getBrandEntries<BlogPostFields>(args, req, 'blogPost', 2);
+}
+
+/** The brand's `dynamicListingPage` for blog posts (any slug), which frames `/blog`. Optional. */
+export async function getBlogListingPage(
+    args: Args,
+    req: ContentRequest
+): Promise<CfEntry<DynamicListingPageFields> | null> {
+    const result = await run(args, req, `blogListing:${req.brand.siteId}`, async (client) => {
+        const items = await getEntries<DynamicListingPageFields>(client, {
+            content_type: 'dynamicListingPage',
+            'fields.listingType': 'blogPost',
+            include: MAX_INCLUDE,
+            limit: 20,
+        });
+        return items.find((item) => belongsToBrand(item, req.brand)) ?? null;
+    });
+    return result ?? null;
+}
+
+async function dynamicCollectionItems(
+    args: Args,
+    req: ContentRequest,
+    collection: CfEntry<DynamicCollectionFields>
+): Promise<CfEntry[]> {
+    try {
+        const queried = await Promise.all(
+            dynamicCollectionTypes(collection).map((type) => getBrandEntries(args, req, type, 2))
+        );
+        return mergeDynamicItems(collection, queried.flat());
+    } catch {
+        // One failed listing shouldn't take the page down: show the pinned entries alone (the failure is logged).
+        return mergeDynamicItems(collection, []);
+    }
+}
+
+/**
+ * Runs the queries of the `dynamicCollection` entries in a page's section field and fills their `items`, so they
+ * render like collections. Returns a copy: the fetched page may be a shared cache entry.
+ */
+export async function resolveDynamicCollections<T extends Record<string, unknown>>(
+    args: Args,
+    req: ContentRequest,
+    page: CfEntry<T>,
+    field: keyof T & string
+): Promise<CfEntry<T>> {
+    const sections = page.fields[field] as CfEntry[] | undefined;
+    if (!sections?.some((section) => contentTypeId(section) === 'dynamicCollection')) return page;
+    const resolved = await Promise.all(
+        sections.map(async (section) => {
+            if (contentTypeId(section) !== 'dynamicCollection') return section;
+            const collection = section as CfEntry<DynamicCollectionFields>;
+            const items = await dynamicCollectionItems(args, req, collection);
+            return { ...collection, fields: { ...collection.fields, items } };
+        })
+    );
+    return { ...page, fields: { ...page.fields, [field]: resolved } };
 }
 
 const naturalOrder = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });

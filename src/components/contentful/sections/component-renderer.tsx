@@ -19,13 +19,23 @@ import {
     type CallToActionFields,
     type CfEntry,
     type CollectionFields,
+    type DynamicCollectionFields,
 } from '@/lib/contentful/types';
 import { Banner } from './banner';
 import { CallToAction } from './call-to-action';
 import { Collection } from './collection';
 
-/** Content types that render as page sections, and that Contentful Personalization can swap for a variant. */
-export const SECTION_TYPES = new Set(['banner', 'collection', 'callToAction']);
+/**
+ * Content types that render as page sections, and that Contentful Personalization can swap for a variant. A
+ * `dynamicCollection` renders once its loader has filled `items` (see `resolveDynamicCollections`).
+ */
+export const SECTION_TYPES = new Set(['banner', 'collection', 'callToAction', 'dynamicCollection']);
+
+/** A dynamic collection is a grid collection whose items the loader queried. Renders nothing until then. */
+function DynamicCollection({ collection }: { collection: CfEntry<DynamicCollectionFields> }) {
+    if (!collection.fields.items?.length) return null;
+    return <Collection collection={collection as CfEntry<CollectionFields>} />;
+}
 
 type EntryProps = Record<string, unknown> & { asHero?: boolean };
 
@@ -43,6 +53,8 @@ export function ComponentRenderer(props: EntryProps) {
             return <CallToAction cta={entry as CfEntry<CallToActionFields>} asHero={asHero} />;
         case 'collection':
             return <Collection collection={entry as CfEntry<CollectionFields>} />;
+        case 'dynamicCollection':
+            return <DynamicCollection collection={entry as CfEntry<DynamicCollectionFields>} />;
         default:
             return null;
     }

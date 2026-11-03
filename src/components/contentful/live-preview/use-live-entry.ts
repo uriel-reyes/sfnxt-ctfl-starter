@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePreviewMode } from '@/lib/contentful/inspector';
 import { LIVE_PREVIEW_LOCALE, livePreviewSdk } from './sdk';
 
 type Entry = { sys: { id: string; updatedAt?: string } };
+
+const NONE: readonly string[] = [];
 
 /** True when `a` was saved after `b`. Unknown timestamps count as newer, so loader data wins when in doubt. */
 export function isNewer(a: Entry, b: Entry): boolean {
@@ -32,12 +34,24 @@ export function isNewer(a: Entry, b: Entry): boolean {
  * for the shared `init()` (so the SDK stays out of the regular bundle), and a save reload that reaches the Preview
  * API before the save does can't undo a live edit: loader data replaces the live copy only once it is newer.
  * Outside preview this returns `entry` unchanged and loads nothing.
+ *
+ * `loaderFields` names fields the loader computes rather than Contentful stores (e.g. a dynamic collection's queried
+ * `items`); the editor knows nothing of them, so they always come from `entry`.
  */
-export function useLiveEntry<T extends Entry | null | undefined>(entry: T): T {
+export function useLiveEntry<T extends Entry | null | undefined>(
+    entry: T,
+    { loaderFields = NONE }: { loaderFields?: readonly string[] } = {}
+): T {
     const preview = usePreviewMode();
     const [live, setLive] = useState<NonNullable<T> | null>(null);
-    const current =
-        entry && live && live.sys.id === entry.sys.id && !isNewer(entry, live) ? (live as unknown as T) : entry;
+    const current = useMemo(() => {
+        if (!entry || !live || live.sys.id !== entry.sys.id || isNewer(entry, live)) return entry;
+        if (!loaderFields.length) return live as unknown as T;
+        const loaded = (entry as { fields?: Record<string, unknown> }).fields ?? {};
+        const fields = { ...(live as { fields?: Record<string, unknown> }).fields };
+        for (const field of loaderFields) fields[field] = loaded[field];
+        return { ...live, fields } as unknown as T;
+    }, [entry, live, loaderFields]);
     const sent = useRef(current);
     sent.current = current;
 

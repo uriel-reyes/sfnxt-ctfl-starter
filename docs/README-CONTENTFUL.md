@@ -39,7 +39,7 @@ The Salesforce variables (`PUBLIC__app__commerce__api__*`, `MRT_*`) are commente
 2. In **Settings → API keys**, create a key, then set `CONTENTFUL_BRAND_DELIVERY_TOKEN` and `CONTENTFUL_BRAND_PREVIEW_TOKEN` from it.
 3. In `config.server.base.ts`, set `app.contentful.spaces.brand.spaceId` and `environment`. Then define your brands in `app.contentful.brands`, keyed by site ID: `name`, `tag`, `homeSlug`, and optionally `contentName` and `logo`.
 4. In `config.server.ts`, list one site per brand in `commerce.sites`, and set `defaultSiteId` and `siteAliasMap`. Add a `[data-brand='<siteId>']` block for each brand in `src/theme/overrides/brands.css`.
-5. Author entries with the brand's internal-name prefix (`<contentName> - …`). Create a `landingPage` with the brand's `homeSlug`, top-level `navigation` entries, and a `company` entry named after the brand for its logo.
+5. Author entries with the brand's internal-name prefix (`<contentName> - …`). Create a `landingPage` with the brand's `homeSlug`, top-level `navigation` entries, and a `company` entry named after the brand for its logo. Blog posts are optional (see [Blog](#blog)).
 6. Choose a `CONTENTFUL_PREVIEW_SECRET`, then set up the content preview URL (see [Content preview URLs](#content-preview-urls)).
 7. For personalization, copy the Ninetailed API key and environment into `PUBLIC__app__personalization__clientId` / `__environment`.
 
@@ -62,11 +62,24 @@ If you make the tags public in Contentful, you can switch the queries in `src/li
 | `/:slug` | `landingPage` | `src/routes/_app.$slug.tsx` |
 | `/shop/:slug` | `productCategory` (PLP: products that link to the category) | `src/routes/_app.shop.$slug.tsx` |
 | `/products/:slug` | `product` (PDP) | `src/routes/_app.products.$slug.tsx` |
+| `/blog` | The brand's `blogPost` entries, framed by its blog `dynamicListingPage` if there is one | `src/routes/_app.blog._index.tsx` |
+| `/blog/:slug` | `blogPost` | `src/routes/_app.blog.$slug.tsx` |
 | `/cart` | Mock cart | `src/routes/_app.cart.tsx` |
 
 The navigation and brand tabs load in the `_app` layout loader (`navigation` entries and `company` logos).
 
-Section rendering lives in `src/components/contentful/sections/`. `component-renderer.tsx` maps the `banner`, `collection` and `callToAction` content types to components, and `cards.tsx` maps each card type inside a collection. Add a content type by registering it in those maps. [README-DEMO-2.0-CONTENT-MODEL.md](./README-DEMO-2.0-CONTENT-MODEL.md) lists the Demo 2.0 types that aren't rendered yet.
+Section rendering lives in `src/components/contentful/sections/`. `component-renderer.tsx` maps the `banner`, `collection`, `callToAction` and `dynamicCollection` content types to components, and `cards.tsx` maps each card type inside a collection. Add a content type by registering it in those maps. [README-DEMO-2.0-CONTENT-MODEL.md](./README-DEMO-2.0-CONTENT-MODEL.md) lists the Demo 2.0 types that aren't rendered yet.
+
+### Blog
+
+Blog posts live in the same space as the rest of a brand's content and are scoped the same way: a post belongs to a brand when its internal name starts with `<contentName> - ` (for example `Easton - Blog 1`), and its slug may carry the `-<tag>` suffix. Nothing is configured per brand. A brand with no posts and no blog listing page has no blog, and `/blog` returns a 404.
+
+- **Posts** (`blogPost`) render at `/blog/:slug` (`src/components/contentful/blog/`). The page shows the title, teaser, authors (`person`: name, role, avatar), the `media` image, the body, the `cta` and up to three `relatedPosts`. The body renders headings, lists, quotes, tables and links, plus embedded images and assets, and embedded `callToAction`, `quote`, `customerReview` and `mediaMention` entries. `seoMetadata` drives the page metadata.
+- **Index** (`/blog`) lists the brand's posts, newest first by creation date, because the model has no publish date. It shows up to 100 posts. If the brand has a `dynamicListingPage` with `listingType` **blogPost**, the index uses its `title`, `teaser`, `hero`, `seoMetadata` and `additionalSections`, whatever its slug. Links and navigation entries that target that listing page go to `/blog`.
+- **Cards**: a `blogPost` in a `collection` renders as a post card.
+- **Dynamic collections**: a `dynamicCollection` in a landing page's `sections` or a product's `additionalSections` is filled by the page loader (`resolveDynamicCollections` in `src/lib/contentful/content.server.ts`) and then renders like a grid `collection`. It shows the `include` entries first, then the brand's newest (or oldest) entries of the selected `type`, minus `exclude`, up to `limit`. Only the types with a card are queried: **Blog Post**, **Product** and **Product Category**. A `limit` of 0 shows only the `include` entries.
+
+To start a blog for a brand, author `blogPost` entries with the brand's prefix. Then link to them from a collection or a `dynamicCollection`, or add a navigation entry targeting the brand's blog `dynamicListingPage`.
 
 ### Commerce routes are disconnected, not deleted
 
@@ -91,6 +104,12 @@ With a valid secret, the request:
 
 Without the secret, or with a wrong one, the page is the published site, and the SDK is never downloaded.
 
+### Inspector
+
+The inspector outlines each field and its **Edit** button opens that entry at that field. Text is tagged automatically: the Preview API's Content Source Maps encode every text field, and the SDK maps rendered text back to its entry and field. `useInspector()` adds manual tags (`data-contentful-entry-id` / `-field-id`) for what Content Source Maps can't cover: images, plain-text renderings of rich text, and text right after a live edit, whose editor value carries no encoding.
+
+Put manual tags only on leaf elements. The SDK ignores the Content Source Map tags of all text inside a manually tagged element, so a tag on a container (a page's sections wrapper, a post's related posts) sends every click inside it to the container's field instead of to the entry that holds the text.
+
 ### Content preview URLs
 
 Both brands share one space, and a URL template can't tell which brand an entry belongs to or which page shows it. So every content type in Contentful (**Settings → Content preview**) uses the same template:
@@ -101,7 +120,7 @@ http://localhost:5173/rawlings/en-US/contentful-preview?id={entry.sys.id}&cfprev
 
 `src/routes/contentful-preview.ts` finds the page for the entry (`src/lib/contentful/preview-target.server.ts`) and redirects to it in preview:
 
-- Landing pages, products and categories open their own page.
+- Landing pages, products, categories and blog posts open their own page, and the blog `dynamicListingPage` opens `/blog`.
 - Any other entry opens the nearest page that links to it (up to four link levels up, e.g. link → card → section → page).
 - If no page links to the entry, it opens the brand's home page.
 - The brand comes from the internal-name prefix of the page, or of the entry itself, so the `rawlings` segment in the template doesn't decide the site.

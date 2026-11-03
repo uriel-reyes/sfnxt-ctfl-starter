@@ -15,23 +15,20 @@
  */
 import { useLiveOrder } from '@/components/contentful/live-preview/use-live-order';
 import { ExperienceBlock } from '@/components/personalization/experience-block';
-import { useInspector } from '@/lib/contentful/inspector';
 import { contentTypeId, entryKeys, type CfEntry } from '@/lib/contentful/types';
 import { SECTION_TYPES } from './component-renderer';
 
-/** The landing page hero (banner or call to action), full bleed with its heading as the page `h1`. */
-export function Hero({
-    entry,
-    ownerId,
-}: {
-    entry: CfEntry | undefined;
-    /** The entry whose `hero` field links this one, so the Live Preview inspector can open that field. */
-    ownerId?: string;
-}) {
-    const cf = useInspector();
+/**
+ * The landing page hero (banner or call to action), full bleed with its heading as the page `h1`.
+ *
+ * Neither this wrapper nor the sections wrapper carries a Live Preview inspector tag: the inspector ignores the
+ * Content Source Map tags of all text inside a manually tagged element, so a tag here would send every click in the
+ * hero to the page instead of to the entry that holds the text.
+ */
+export function Hero({ entry }: { entry: CfEntry | undefined }) {
     if (!entry || !SECTION_TYPES.has(contentTypeId(entry))) return null;
     return (
-        <div className="w-full overflow-hidden" {...cf(ownerId, 'hero')}>
+        <div className="w-full overflow-hidden">
             <ExperienceBlock entry={entry} asHero />
         </div>
     );
@@ -51,7 +48,6 @@ export function Sections({
     owner: CfEntry | undefined;
     fieldId?: string;
 }) {
-    const cf = useInspector();
     const items = useLiveOrder(
         owner,
         fieldId,
@@ -60,7 +56,7 @@ export function Sections({
     if (!items.length) return null;
     const keys = entryKeys(items);
     return (
-        <div className="flex flex-col gap-1" {...cf(owner?.sys.id, fieldId)}>
+        <div className="flex flex-col gap-1">
             {items.map((section, index) => (
                 <ExperienceBlock key={keys[index]} entry={section} />
             ))}

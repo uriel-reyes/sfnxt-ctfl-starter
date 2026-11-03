@@ -14,7 +14,7 @@ For setup, routes, Live Preview and personalization, see [README-CONTENTFUL.md](
 | **Read** | The storefront queries or follows this type (routing, logos, prices, preview data) but has no component of its own for it. |
 | **Not used** | Part of the Demo 2.0 model, but the storefront ignores it. Entries of these types render nothing. |
 
-To render a type that is **Not used**, add a component and register it. Sections go in `src/components/contentful/sections/component-renderer.tsx` (and in `SECTION_TYPES`), collection items in `CARDS` in `src/components/contentful/sections/cards.tsx`, and new routed pages in `src/routes/` plus `ROUTE_PREFIXES` in `src/lib/contentful/links.ts`.
+To render a type that is **Not used**, add a component and register it. Sections go in `src/components/contentful/sections/component-renderer.tsx` (and in `SECTION_TYPES`), collection items in `CARDS` in `src/components/contentful/sections/cards.tsx`, and new routed pages in `src/routes/` plus `ROUTE_PREFIXES` in `src/lib/contentful/links.ts` and `PAGE_TYPES` in `src/lib/contentful/preview-target.server.ts`. A new card type also becomes available to `dynamicCollection` once it is added to `DYNAMIC_COLLECTION_TYPES` in `src/lib/contentful/blog.ts`.
 
 ## Authoring conventions the storefront relies on
 
@@ -25,6 +25,7 @@ Two brands share the space. The code scopes content to a brand with naming conve
 - **Private tags.** Entries also carry `rawlings`, `rawlings2` or `easton` tags. They are private, so the Delivery and Preview APIs don't return them and the code can't filter on them.
 - **Navigation order.** Top-level `navigation` entries are ordered by internal name (`… Navigation 1`, `… Navigation 2`).
 - **Brand logo.** Each brand's `company` entry is matched by `name`. Its `logo` is shown in the brand tabs unless `logo` is set in the brand's config.
+- **Blog listing page.** A brand's `dynamicListingPage` with `listingType` blogPost frames `/blog`, whatever its slug. A brand needs at most one.
 - **Experiences.** `banner`, `callToAction`, `collection`, `alert` and `promotionalOffer` have an `nt_experiences` field. The storefront honors it on page sections (hero and `sections`) through `ExperienceBlock`.
 
 ## Content types
@@ -33,12 +34,12 @@ Two brands share the space. The code scopes content to a brand with naming conve
 
 | Type | Name | Status | How the storefront uses it |
 | --- | --- | --- | --- |
-| `landingPage` | Landing Page | Rendered | Home (`homeSlug` from brand config) and `/:slug`. Reads `title`, `slug`, `hero` (banner or callToAction), `sections`, `seoMetadata`. In `sections`, `collection`, `callToAction` and `banner` render. `dynamicCollection` and `form` are skipped. |
+| `landingPage` | Landing Page | Rendered | Home (`homeSlug` from brand config) and `/:slug`. Reads `title`, `slug`, `hero` (banner or callToAction), `sections`, `seoMetadata`. In `sections`, `collection`, `callToAction`, `banner` and `dynamicCollection` render. `form` is skipped. |
 | `product` | Product | Rendered | PDP at `/products/:slug`, and as a collection card. Reads `name`, `slug`, `teaser`, `media`, `images`, `description`, `categories`, `additionalSections`, `seoMetadata`, and the price from `sku`. |
 | `productCategory` | Product Category | Rendered | PLP at `/shop/:slug` (products whose `categories` link to it), and as a collection card. `subcategories` is not shown. |
-| `dynamicListingPage` | Dynamic Listing Page | Not used | Listing of one content type (`listingType`: blogPost, policy, event, person, supportArticleCategory, storeLocation). |
+| `dynamicListingPage` | Dynamic Listing Page | Rendered (blog only) | With `listingType` blogPost, frames the blog index at `/blog`: `title`, `teaser`, `media` (Open Graph image), `hero`, `seoMetadata`, `additionalSections`. Other listing types are not used, and links to them go to `/<slug>` (404). |
 | `studioLandingPage` | Studio: Landing Page | Not used | Contentful Studio (Experiences) page. Needs the Experiences SDK. |
-| `blogPost` | Blog Post | Not used | |
+| `blogPost` | Blog Post | Rendered | Post page at `/blog/:slug`, card in collections and on `/blog`. Reads `title`, `slug`, `teaser`, `media`, `body`, `author`, `relatedPosts`, `cta`, `seoMetadata`. The index is ordered by `sys.createdAt` (the model has no publish date). |
 | `policy` | Policy | Not used | |
 | `supportArticle` | Support Article | Not used | |
 | `supportArticleCategory` | Support Article Category | Not used | |
@@ -47,7 +48,7 @@ Two brands share the space. The code scopes content to a brand with naming conve
 | `storeLocation` | Store Location | Not used | |
 | `newsletter` | Newsletter | Not used | Email content, not a web page. |
 
-Links and CTAs may target any of the page types. Only `landingPage`, `product` and `productCategory` resolve to a page. A link to any other page type resolves to `/<slug>`, which returns a 404 because `/:slug` only looks up landing pages.
+Links and CTAs may target any of the page types. `landingPage`, `product`, `productCategory`, `blogPost` and the blog `dynamicListingPage` resolve to a page. A link to any other page type (event, policy, support article, …) resolves to `/<slug>`, which returns a 404 because `/:slug` only looks up landing pages.
 
 ### Sections
 
@@ -56,7 +57,7 @@ Links and CTAs may target any of the page types. Only `landingPage`, `product` a
 | `banner` | Banner | Rendered | Hero, section and card. Reads `heading`, `body`, `links` (max 2), `media`, `contentPosition`, `mediaPosition` (Background, Left Half, Right Half), `theme` (Default, Primary, Secondary), `size` (Large, Medium, Small, Full Height), `nt_experiences`. |
 | `callToAction` | Call to Action | Rendered | Hero, section and card. Reads `heading`, `body`, `media`, `label`, `internalTarget`, `urlTarget`, `nt_experiences`. `dataProvider` is not read. |
 | `collection` | Collection | Rendered | Reads `heading`, `introduction`, `items`, `links`, `theme`, `layout`, `nt_experiences`. Layouts: `Grid`, `Carousel (Full)` (banner carousel) and `Carousel (Multi)` have their own layouts. `Stack` and `Accordion` render as a vertical stack. The code also handles an `Icon Grid` layout that the model doesn't offer. |
-| `dynamicCollection` | Dynamic Collection | Not used | Query-driven list (`type`, `limit`, `include`, `exclude`, `displayOrder`). Skipped when placed in `sections`. |
+| `dynamicCollection` | Dynamic Collection | Rendered | In landing page `sections` and product `additionalSections`. The loader queries the brand's entries of each `type` that has a card (Blog Post, Product, Product Category; other types are skipped), puts `include` first, drops `exclude`, orders by creation date per `displayOrder` and cuts to `limit` (0 shows only `include`). Renders as a grid collection with `heading`, `introduction`, `links` and `theme`. |
 | `form` | Form | Not used | Mock form. Skipped when placed in `sections`. |
 
 ### Collection items
@@ -65,17 +66,17 @@ Links and CTAs may target any of the page types. Only `landingPage`, `product` a
 
 | Type | Name | Status |
 | --- | --- | --- |
-| `banner`, `callToAction`, `product`, `productCategory` | | Rendered as cards |
+| `banner`, `callToAction`, `product`, `productCategory`, `blogPost` | | Rendered as cards |
 | `benefit` | Benefit | Not used |
-| `customerReview` | Customer Review | Not used |
+| `customerReview` | Customer Review | Not used as a card. Rendered when embedded in a blog post body |
 | `faqItem` | FAQ Item | Not used |
-| `mediaMention` | Media Mention | Not used |
-| `quote` | Quote | Not used |
+| `mediaMention` | Media Mention | Not used as a card. Rendered when embedded in a blog post body |
+| `quote` | Quote | Not used as a card. Rendered when embedded in a blog post body |
 | `stats` | Stats | Not used |
-| `person` | Person | Not used |
+| `person` | Person | Not used as a card. Read as blog post authors |
 | `company` | Company | Not used as a card (read for brand logos, see below) |
 | `assetWrapper` | Asset Wrapper | Not used |
-| `link`, `landingPage`, `blogPost`, `policy`, `supportArticle`, `storeLocation`, `form` | | Not used as cards |
+| `link`, `landingPage`, `policy`, `supportArticle`, `storeLocation`, `form` | | Not used as cards |
 
 ### Media
 
@@ -115,13 +116,13 @@ Links and CTAs may target any of the page types. Only `landingPage`, `product` a
 | --- | --- | --- | --- |
 | `nt_experience` | Experience | Read | Resolved by the SDK from `nt_experiences` on sections. All experiences are loaded for the preview widget in dev and preview. |
 | `nt_audience` | Audience | Read | Loaded for the preview widget. |
-| `nt_mergetag` | Merge Tag | Not used | Allowed inline in `banner.body`. Embedded inline entries in rich text render nothing. |
+| `nt_mergetag` | Merge Tag | Not used | Allowed inline in `banner.body` and `blogPost.body`. Embedded inline entries in rich text render nothing. |
 
 ### People, places and forms
 
 | Type | Name | Status |
 | --- | --- | --- |
-| `person` | Person | Not used |
+| `person` | Person | Read: blog post authors (`firstName`, `lastName`, `role`, `avatar`) and quote attributions |
 | `place` | Place | Not used |
 | `formStatus` | Form Status | Not used |
 | `salesforceForm` | Salesforce Form | Not used |

@@ -46,7 +46,20 @@ const options: Options = {
     },
 };
 
-export function RichText({ document, className }: { document?: Document; className?: string }) {
+/**
+ * Renders a Contentful rich-text field. `renderNode` adds or overrides node renderers (e.g. embedded entries in a
+ * blog post body) on top of the defaults.
+ */
+export function RichText({
+    document,
+    className,
+    renderNode,
+}: {
+    document?: Document;
+    className?: string;
+    renderNode?: Options['renderNode'];
+}) {
     if (!document) return null;
-    return <div className={className}>{documentToReactComponents(document, options)}</div>;
+    const merged = renderNode ? { ...options, renderNode: { ...options.renderNode, ...renderNode } } : options;
+    return <div className={className}>{documentToReactComponents(document, merged)}</div>;
 }

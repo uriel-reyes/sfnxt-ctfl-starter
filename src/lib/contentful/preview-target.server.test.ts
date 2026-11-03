@@ -62,6 +62,18 @@ describe('resolvePreviewTarget', () => {
             entry('card', 'card', { internalName: 'Easton - Card' }, ['section']),
             entry('glove', 'product', { slug: 'rev1x', internalName: 'Rawlings - Product - Rev1X' }),
             entry('nav', 'navigation', { internalName: 'Easton - Navigation 1' }),
+            entry('post', 'blogPost', { slug: 'swing-tips', internalName: 'Easton - Blog 1' }),
+            entry('quote', 'quote', { internalName: 'Easton - Quote' }, ['post']),
+            entry('blog', 'dynamicListingPage', {
+                slug: 'stories-easton',
+                listingType: 'blogPost',
+                internalName: 'Easton - Blog Listing',
+            }),
+            entry('events', 'dynamicListingPage', {
+                slug: 'events',
+                listingType: 'event',
+                internalName: 'Easton - Events',
+            }),
         ];
     });
 
@@ -81,6 +93,22 @@ describe('resolvePreviewTarget', () => {
         await expect(resolvePreviewTarget(args, req, 'card')).resolves.toMatchObject({
             brand: { siteId: 'easton' },
             path: '/shop',
+        });
+    });
+
+    it('sends blog posts, their embeds and the blog listing page to the blog', async () => {
+        await expect(resolvePreviewTarget(args, req, 'post')).resolves.toMatchObject({
+            brand: { siteId: 'easton' },
+            path: '/blog/swing-tips',
+        });
+        await expect(resolvePreviewTarget(args, req, 'quote')).resolves.toMatchObject({ path: '/blog/swing-tips' });
+        await expect(resolvePreviewTarget(args, req, 'blog')).resolves.toMatchObject({ path: '/blog' });
+    });
+
+    it('does not treat listings without a route as pages', async () => {
+        await expect(resolvePreviewTarget(args, req, 'events')).resolves.toMatchObject({
+            brand: { siteId: 'easton' },
+            path: '/',
         });
     });
 

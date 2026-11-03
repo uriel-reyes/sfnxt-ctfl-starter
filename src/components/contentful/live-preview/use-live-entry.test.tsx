@@ -90,6 +90,18 @@ describe('useLiveEntry', () => {
         await waitFor(() => expect(subscribe.mock.calls.at(-1)?.[1].data.fields.heading).toBe('Typed'));
     });
 
+    it('always takes loader-computed fields from the loader entry', async () => {
+        type Dynamic = Banner & { fields: { items?: string[] } };
+        const loaded: Dynamic = { ...banner('Loaded'), fields: { heading: 'Loaded', items: ['queried'] } };
+        const { result } = renderHook(() => useLiveEntry(loaded, { loaderFields: ['items'] }), {
+            wrapper: wrapper(true),
+        });
+        await waitFor(() => expect(subscribe).toHaveBeenCalled());
+
+        act(() => editorCallback()(banner('Typed')));
+        expect(result.current.fields).toEqual({ heading: 'Typed', items: ['queried'] });
+    });
+
     it('switches to the loader entry once the save reaches the Preview API', async () => {
         const { result, rerender } = renderHook(({ entry }) => useLiveEntry(entry), {
             wrapper: wrapper(true),

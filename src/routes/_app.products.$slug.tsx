@@ -15,7 +15,7 @@
  */
 import type { Route } from './+types/_app.products.$slug';
 import { ProductDetail } from '@/components/contentful/product-detail';
-import { getProduct } from '@/lib/contentful/content.server';
+import { getProduct, resolveDynamicCollections } from '@/lib/contentful/content.server';
 import { canonicalUrl, notFound, requireContentRequest } from '@/lib/contentful/route.server';
 import type { CfEntry, ProductFields } from '@/lib/contentful/types';
 
@@ -26,7 +26,10 @@ export async function loader(args: Route.LoaderArgs): Promise<ProductData> {
     const req = requireContentRequest(args);
     const product = await getProduct(args, req, args.params.slug);
     if (!product) notFound();
-    return { product, url: canonicalUrl(args) };
+    return {
+        product: await resolveDynamicCollections(args, req, product, 'additionalSections'),
+        url: canonicalUrl(args),
+    };
 }
 
 export default function ProductPage({ loaderData }: { loaderData: ProductData }) {

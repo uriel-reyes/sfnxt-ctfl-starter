@@ -19,7 +19,10 @@ import { ExperienceMapper, type ExperienceEntryLike } from '@ninetailed/experien
 import { ComponentRenderer } from '@/components/contentful/sections/component-renderer';
 import { useLiveEntry } from '@/components/contentful/live-preview/use-live-entry';
 import { breakCycles, normalizeExperienceIds } from '@/lib/contentful/live-preview';
-import type { CfEntry } from '@/lib/contentful/types';
+import { contentTypeId, type CfEntry } from '@/lib/contentful/types';
+
+/** Fields the loader fills in rather than Contentful (see `resolveDynamicCollections`); live edits keep the loader's. */
+const LOADER_FIELDS: Partial<Record<string, readonly string[]>> = { dynamicCollection: ['items'] };
 
 /**
  * Wraps a personalizable entry in Ninetailed's `<Experience>`. The experiences attached to the entry
@@ -28,7 +31,7 @@ import type { CfEntry } from '@/lib/contentful/types';
  */
 export function ExperienceBlock({ entry: loaded, asHero = false }: { entry: CfEntry; asHero?: boolean }) {
     // Under Live Preview, the editor's unsaved changes to this entry (and the entries it links) render as they're typed.
-    const entry = useLiveEntry(loaded);
+    const entry = useLiveEntry(loaded, { loaderFields: LOADER_FIELDS[contentTypeId(loaded)] });
     const experiences = useMemo(
         () =>
             breakCycles(

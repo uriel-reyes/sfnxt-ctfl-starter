@@ -25,6 +25,7 @@ import { contentTypeId, type CfEntry, type LinkFields } from './types';
 export const ROUTE_PREFIXES: Record<string, string> = {
     product: routes.products,
     productCategory: routes.shop,
+    blogPost: routes.blog,
 };
 
 /** Site-relative href for a resolved internal-target entry. */
@@ -36,6 +37,10 @@ export function hrefForEntry(entry: CfEntry | undefined, brand: Brand | null): s
     if (type === 'landingPage') {
         if (!slug || slug === brand?.homeSlug) return routes.home;
         return `/${urlSlug(slug, brand)}`;
+    }
+    // The blog listing page frames `/blog` whatever its slug. Listings of other types have no route yet.
+    if (type === 'dynamicListingPage' && stripStega(entry.fields?.listingType as string | undefined) === 'blogPost') {
+        return routes.blog;
     }
     const prefix = ROUTE_PREFIXES[type];
     if (prefix) return slug ? `${prefix}/${urlSlug(slug, brand)}` : prefix;

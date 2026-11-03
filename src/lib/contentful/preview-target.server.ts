@@ -20,15 +20,22 @@ import { type Brand, belongsToBrand, listBrands } from './brand';
 import { type ContentfulClient, queryContentful } from './client.server';
 import type { ContentRequest } from './content.server';
 import { hrefForEntry } from './links';
+import { stripStega } from './live-preview';
 import { contentTypeId, type CfEntry } from './types';
 
 type Args = Pick<LoaderFunctionArgs, 'context' | 'request'>;
 
 /** Content types with a storefront URL of their own; any other entry previews on the nearest page linking to it. */
-const PAGE_TYPES = new Set(['landingPage', 'product', 'productCategory']);
+const PAGE_TYPES = new Set(['landingPage', 'product', 'productCategory', 'blogPost']);
 /** How many link levels to climb looking for that page (e.g. link → card → section → landing page). */
 const MAX_DEPTH = 4;
 const MAX_PARENTS = 20;
+
+/** Only the blog listing page has a route (`/blog`); other listing types preview on a page linking to them. */
+const isPage = (entry: CfEntry) =>
+    PAGE_TYPES.has(contentTypeId(entry)) ||
+    (contentTypeId(entry) === 'dynamicListingPage' &&
+        stripStega(entry.fields.listingType as string | undefined) === 'blogPost');
 
 export type PreviewTarget = { brand: Brand; path: string };
 
@@ -45,7 +52,7 @@ async function climbToPage(client: ContentfulClient, entryId: string): Promise<C
     for (let depth = 0; level.length > 0 && depth <= MAX_DEPTH; depth++) {
         for (const entry of level) seen.add(entry.sys.id);
         visited.push(...level);
-        if (level.some((entry) => PAGE_TYPES.has(contentTypeId(entry)))) break;
+        if (level.some(isPage)) break;
         const parents = await Promise.all(
             level.map((entry) => entries(client, { links_to_entry: entry.sys.id, limit: MAX_PARENTS }))
         );
@@ -71,7 +78,7 @@ export async function resolvePreviewTarget(args: Args, req: ContentRequest, entr
             (client) => climbToPage(client, entryId)
         )) ?? [];
 
-    const pages = visited.filter((entry) => PAGE_TYPES.has(contentTypeId(entry)));
+    const pages = visited.filter(isPage);
     const brandOf = (entry: CfEntry) => brands.find((brand) => belongsToBrand(entry, brand));
     const page = pages.find((entry) => belongsToBrand(entry, req.brand)) ?? pages.find(brandOf) ?? pages[0];
     const brand = (page && brandOf(page)) ?? visited.map(brandOf).find((found): found is Brand => !!found) ?? req.brand;

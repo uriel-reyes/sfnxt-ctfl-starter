@@ -15,7 +15,7 @@
  */
 import type { Route } from './+types/_app.$slug';
 import { LandingPage } from '@/components/contentful/landing-page';
-import { getLandingPage } from '@/lib/contentful/content.server';
+import { getLandingPage, resolveDynamicCollections } from '@/lib/contentful/content.server';
 import { canonicalUrl, notFound, requireContentRequest } from '@/lib/contentful/route.server';
 import { urlSlug } from '@/lib/contentful/brand';
 import type { CfEntry, LandingPageFields } from '@/lib/contentful/types';
@@ -30,7 +30,7 @@ export async function loader(args: Route.LoaderArgs): Promise<PageData> {
     if (!segment || segment === urlSlug(req.brand.homeSlug, req.brand)) notFound();
     const page = await getLandingPage(args, req, segment);
     if (!page) notFound();
-    return { page, url: canonicalUrl(args) };
+    return { page: await resolveDynamicCollections(args, req, page, 'sections'), url: canonicalUrl(args) };
 }
 
 export default function ContentPage({ loaderData }: { loaderData: PageData }) {

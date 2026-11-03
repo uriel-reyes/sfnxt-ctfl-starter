@@ -96,6 +96,8 @@ export const routes = {
     shopCategory: '/shop/:slug',
     products: '/products',
     product: '/products/:slug',
+    blog: '/blog',
+    blogPost: '/blog/:slug',
     cart: '/cart',
     checkout: '/checkout',
     login: '/login',

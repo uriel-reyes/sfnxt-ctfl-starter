@@ -19,17 +19,29 @@ export const LIVE_PREVIEW_LOCALE = 'en-US';
 
 type Sdk = typeof ContentfulLivePreview;
 
+/** The space the page renders from. Manually tagged elements take it from `init()`; Content Source Maps carry their own. */
+export type LivePreviewTarget = { space?: string; environment?: string };
+
 let sdk: Promise<Sdk | null> | undefined;
 
 /**
  * The Live Preview SDK, downloaded and initialized once per page. Every caller shares this instance so subscriptions
  * never race `init()`. Resolves to null when the SDK can't connect (e.g. framed by something other than the editor).
  * Outside the editor iframe `init()` leaves live updates off and `subscribe()` returns a no-op.
+ *
+ * The first call initializes the SDK, so `LivePreviewProvider` makes it with the page's `target` before any other
+ * caller.
  */
-export function livePreviewSdk(): Promise<Sdk | null> {
+export function livePreviewSdk(target: LivePreviewTarget = {}): Promise<Sdk | null> {
     sdk ??= import('@contentful/live-preview').then(({ ContentfulLivePreview: preview }) => {
         try {
-            void preview.init({ locale: LIVE_PREVIEW_LOCALE, enableInspectorMode: true, enableLiveUpdates: true });
+            void preview.init({
+                locale: LIVE_PREVIEW_LOCALE,
+                space: target.space,
+                environment: target.environment,
+                enableInspectorMode: true,
+                enableLiveUpdates: true,
+            });
             return preview;
         } catch {
             return null;

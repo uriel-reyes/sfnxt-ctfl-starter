@@ -18,7 +18,7 @@ import type { Route } from './+types/_app._index';
 import { getConfig } from '@salesforce/storefront-next-runtime/config';
 import { resolvePrefix } from '@salesforce/storefront-next-runtime/site-context';
 import { LandingPage } from '@/components/contentful/landing-page';
-import { getHomePage } from '@/lib/contentful/content.server';
+import { getHomePage, resolveDynamicCollections } from '@/lib/contentful/content.server';
 import { canonicalUrl, notFound, requireContentRequest } from '@/lib/contentful/route.server';
 import type { CfEntry, LandingPageFields } from '@/lib/contentful/types';
 
@@ -45,7 +45,7 @@ export async function loader(args: Route.LoaderArgs): Promise<HomeData> {
     const req = requireContentRequest(args);
     const page = await getHomePage(args, req);
     if (!page) notFound();
-    return { page, url: canonicalUrl(args) };
+    return { page: await resolveDynamicCollections(args, req, page, 'sections'), url: canonicalUrl(args) };
 }
 
 export default function HomePage({ loaderData }: { loaderData: HomeData }) {

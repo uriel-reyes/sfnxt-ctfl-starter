@@ -63,6 +63,13 @@ describe('brand scoping', () => {
         expect(hrefForEntry(entry('landingPage', { slug: 'shop-rawlings' }), rawlings)).toBe('/shop');
         expect(hrefForEntry(entry('product', { slug: 'rev1x' }), rawlings)).toBe('/products/rev1x');
         expect(hrefForEntry(entry('productCategory', { slug: 'gloves' }), rawlings)).toBe('/shop/gloves');
+        expect(hrefForEntry(entry('blogPost', { slug: 'glove-care-rawlings' }), rawlings)).toBe('/blog/glove-care');
+    });
+
+    it('links the blog listing page to /blog whatever its slug, and other listings by slug', () => {
+        const listing = (listingType: string) => entry('dynamicListingPage', { slug: 'stories', listingType });
+        expect(hrefForEntry(listing('blogPost'), rawlings)).toBe('/blog');
+        expect(hrefForEntry(listing('event'), rawlings)).toBe('/stories');
     });
 });
 

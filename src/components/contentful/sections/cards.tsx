@@ -21,9 +21,11 @@ import { AddToCartButton } from '@/components/mock-cart/add-to-cart-button';
 import { useInspector } from '@/lib/contentful/inspector';
 import { resolveMedia } from '@/lib/contentful/media';
 import { isPackshot, productImages, productPrice, toCartProduct } from '@/lib/contentful/product';
+import { byline, personName } from '@/lib/contentful/blog';
 import {
     contentTypeId,
     type BannerFields,
+    type BlogPostFields,
     type CallToActionFields,
     type CfEntry,
     type ProductCategoryFields,
@@ -191,6 +193,37 @@ function CallToActionCard({ cta }: { cta: CfEntry<CallToActionFields> }) {
     return <div className="group flex h-full flex-col">{content}</div>;
 }
 
+export function BlogPostCard({ post, priority = false }: { post: CfEntry<BlogPostFields>; priority?: boolean }) {
+    const cf = useInspector();
+    const f = post.fields;
+    const media = resolveMedia(f.media);
+    const authors = byline((f.author ?? []).map(personName).filter(Boolean));
+    return (
+        <ContentLink entry={post} className="group flex h-full flex-col" data-testid="blog-post-card">
+            <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted" {...cf(post.sys.id, 'media')}>
+                {media && (
+                    <ContentImage
+                        image={{ ...media, alt: media.alt || f.title || '' }}
+                        sizes={CARD_SIZES}
+                        widths={CARD_WIDTHS}
+                        priority={priority}
+                        className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                )}
+            </div>
+            <div className="mt-4 flex flex-1 flex-col">
+                {f.title && (
+                    <h3 className="text-lg font-extrabold leading-snug text-foreground group-hover:text-primary">
+                        {f.title}
+                    </h3>
+                )}
+                {f.teaser && <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{f.teaser}</p>}
+                {authors && <p className="mt-auto pt-3 text-xs font-semibold text-muted-foreground">By {authors}</p>}
+            </div>
+        </ContentLink>
+    );
+}
+
 type AnyEntry = CfEntry;
 
 /**
@@ -202,6 +235,7 @@ const CARDS: Record<string, ComponentType<{ item: AnyEntry }>> = {
     callToAction: ({ item }) => <CallToActionCard cta={item as CfEntry<CallToActionFields>} />,
     product: ({ item }) => <ProductCard product={item as CfEntry<ProductFields>} />,
     productCategory: ({ item }) => <ProductCategoryCard category={item as CfEntry<ProductCategoryFields>} />,
+    blogPost: ({ item }) => <BlogPostCard post={item as CfEntry<BlogPostFields>} />,
 };
 
 export function CollectionCard({ item }: { item: AnyEntry }) {

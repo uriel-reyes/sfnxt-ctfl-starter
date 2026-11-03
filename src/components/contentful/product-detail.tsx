@@ -150,9 +150,10 @@ export function ProductDetail({ product: loaded, url }: { product: CfEntry<Produ
                     )}
                 </div>
             </div>
-            {(f.additionalSections?.length ?? 0) > 0 && (
+            {/* Sections come from the loader, not the live product: each one applies its own live edits. */}
+            {(loaded.fields.additionalSections?.length ?? 0) > 0 && (
                 <div className="mt-16">
-                    <Sections sections={f.additionalSections} owner={product} fieldId="additionalSections" />
+                    <Sections sections={loaded.fields.additionalSections} owner={loaded} fieldId="additionalSections" />
                 </div>
             )}
         </div>

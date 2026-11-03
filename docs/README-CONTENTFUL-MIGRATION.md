@@ -8,7 +8,7 @@ For how the result works day to day, see [README-CONTENTFUL.md](./README-CONTENT
 flowchart LR
   Browser --> Router["routes.ts: Commerce routes ignored"]
   Router --> Layout["_app.tsx loader: navigation, brand tabs, preview data"]
-  Layout --> Pages["home, /:slug, /shop/:slug, /products/:slug, /cart"]
+  Layout --> Pages["home, /:slug, /shop/:slug, /products/:slug, /blog, /blog/:slug, /cart"]
   Pages --> Content["lib/contentful/content.server.ts"]
   Content --> Client["queryContentful in client.server.ts"]
   Client -->|published| CDA["Delivery API"]
@@ -46,11 +46,12 @@ To bring a Commerce route back, remove its pattern from `COMMERCE_ROUTE_FILES`, 
 | File | Purpose |
 | --- | --- |
 | `client.server.ts` | `queryContentful()`, the one way code reads Contentful. You name a space by its config key, and tokens come from `CONTENTFUL_<KEY>_DELIVERY_TOKEN` / `_PREVIEW_TOKEN`. It adds timeouts (4s, or 8s in preview), a 60s per-instance cache for published content (`CONTENTFUL_PAGE_CACHE_TTL_MS`) and in-flight deduplication. |
-| `content.server.ts` | Queries for landing pages, products, categories, navigation, company logos, experiences and audiences. |
+| `content.server.ts` | Queries for landing pages, products, categories, blog posts and the blog listing page, dynamic collections, navigation, company logos, experiences and audiences. |
 | `brand.ts` | Brand scoping by internal-name prefix and slug suffix, `useBrand()`. |
 | `route.server.ts`, `preview.server.ts` | Per-request brand and preview resolution. Preview requires `?cfpreview=` to match `CONTENTFUL_PREVIEW_SECRET`. |
 | `preview-target.server.ts` | Finds the page that shows an entry, searching up to four link levels, for `/contentful-preview`. |
 | `types.ts`, `media.ts`, `links.ts`, `rich-text.ts`, `product.ts` | Field typings, image resolution with focal points, href resolution, rich text helpers, product price. |
+| `blog.ts` | Author names and bylines, and the `dynamicCollection` type mapping and item merging. |
 | `inspector.ts`, `live-preview.ts` | Live Preview tags, plus stega stripping and cycle breaking (section 5). |
 
 ## 4. Routes and components
@@ -60,9 +61,11 @@ To bring a Commerce route back, remove its pattern from `COMMERCE_ROUTE_FILES`, 
 | `src/routes/_app.$slug.tsx` | Any brand `landingPage` by slug. |
 | `src/routes/_app.shop.$slug.tsx` | PLP for a `productCategory`. |
 | `src/routes/_app.products.$slug.tsx` | PDP for a `product`. |
+| `src/routes/_app.blog._index.tsx`, `src/routes/_app.blog.$slug.tsx` | Blog index (brand posts, optional blog `dynamicListingPage`) and post page. |
 | `src/routes/contentful-preview.ts` | Entry ID to page redirect, used by the Contentful content preview URL. |
 | `src/components/contentful/` | `landing-page`, `category-listing`, `product-detail`, `content-image`, `content-link`, `content-seo`. |
-| `src/components/contentful/sections/` | `section-renderer`, `component-renderer` (banner, callToAction, collection), `cards`, `banner`, `banner-carousel`, `call-to-action`, `collection`, `rich-text`. |
+| `src/components/contentful/sections/` | `section-renderer`, `component-renderer` (banner, callToAction, collection, dynamicCollection), `cards`, `banner`, `banner-carousel`, `call-to-action`, `collection`, `rich-text`. |
+| `src/components/contentful/blog/` | `blog-listing`, `blog-post`, `blog-post-body` (rich-text embeds and tables in post bodies). |
 | `src/components/contentful/layout/` | `site-header`, `site-footer`, `brand-tabs`. |
 | `src/theme/overrides/brands.css` (imported from `shared.css`), `public/images/brands/rawlings-logo.png` | Per-brand primary color keyed on `<html data-brand>`, and the self-hosted Rawlings wordmark. |
 
@@ -92,7 +95,7 @@ Added to `package.json`: `contentful`, `@contentful/live-preview`, `@contentful/
 
 ## Re-applying to a newer Foundations release
 
-1. Copy `src/lib/contentful/`, `src/components/contentful/`, `src/components/personalization/`, `src/lib/personalization/`, `src/lib/mock-cart/`, `src/components/mock-cart/`, the four new routes, `brands.css`, the brand logo, `contentful/` and the three Contentful docs.
+1. Copy `src/lib/contentful/`, `src/components/contentful/`, `src/components/personalization/`, `src/lib/personalization/`, `src/lib/mock-cart/`, `src/components/mock-cart/`, the new routes (`_app.$slug`, `_app.shop.$slug`, `_app.products.$slug`, `_app.blog.*`, `contentful-preview`), `brands.css`, the brand logo, `contentful/` and the three Contentful docs.
 2. Add the dependencies from section 8.
 3. Re-apply the edits in sections 1 and 2 by hand. These files change upstream, so merge them rather than overwrite: `routes.ts`, `root.tsx`, `_app.tsx`, `_app._index.tsx`, `_app.cart.tsx`, `app-config.server.ts`, `vite.config.ts`, `config.server*.ts`, `types/config.ts`, `route-paths.ts`, `theme/shared.css`, and the tests.
 4. Check `COMMERCE_ROUTE_FILES` against the new release's route files. New Commerce routes need a pattern.

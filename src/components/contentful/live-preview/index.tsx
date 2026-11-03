@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { lazy, type ReactNode, Suspense } from 'react';
+import { lazy, type ReactNode, Suspense, useLayoutEffect } from 'react';
+import { useConfig } from '@salesforce/storefront-next-runtime/config';
+import { useBrand } from '@/lib/contentful/brand';
 import { InspectorContext } from '@/lib/contentful/inspector';
+import { livePreviewSdk } from './sdk';
 
 const LivePreviewRuntime = lazy(() => import('./runtime'));
 
@@ -26,10 +29,25 @@ export function LivePreviewProvider({ enabled, children }: { enabled: boolean; c
     if (!enabled) return <>{children}</>;
     return (
         <InspectorContext.Provider value>
+            <LivePreviewInit />
             {children}
             <Suspense fallback={null}>
                 <LivePreviewRuntime />
             </Suspense>
         </InspectorContext.Provider>
     );
+}
+
+/**
+ * Initializes the SDK with the brand's space and environment, which manually tagged elements report when clicked.
+ * Layout effects run before every passive effect in the tree, so this beats the live-update hooks to `init()`.
+ */
+function LivePreviewInit() {
+    const config = useConfig();
+    const brand = useBrand();
+    const space = config.contentful?.spaces?.[brand?.space ?? 'brand'];
+    useLayoutEffect(() => {
+        void livePreviewSdk({ space: space?.spaceId, environment: space?.environment || 'master' });
+    }, [space?.spaceId, space?.environment]);
+    return null;
 }

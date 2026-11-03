@@ -15,6 +15,7 @@
  */
 import { cn } from '@/lib/utils';
 import { ContentLink } from '@/components/contentful/content-link';
+import { useInspector } from '@/lib/contentful/inspector';
 import { labelForLink } from '@/lib/contentful/links';
 import { stripStega } from '@/lib/contentful/live-preview';
 import { contentTypeId, type BannerFields, type CfEntry, type CollectionFields } from '@/lib/contentful/types';
@@ -65,6 +66,7 @@ function CollectionLinks({
 }
 
 export function Collection({ collection }: { collection: CfEntry<CollectionFields> }) {
+    const cf = useInspector();
     const f = collection.fields;
     const items = (f.items ?? []).filter(Boolean);
     const links = f.links ?? [];
@@ -101,8 +103,13 @@ export function Collection({ collection }: { collection: CfEntry<CollectionField
                 <div className="mx-auto max-w-7xl px-6 py-14 md:py-20">
                     <div className="grid grid-cols-1 gap-10 lg:grid-cols-3 lg:items-center lg:gap-12">
                         <div>
+                            {/* Plain text has no Content Source Map, so the inspector needs a manual tag. */}
                             {eyebrow && (
-                                <p className="text-xs font-semibold uppercase tracking-[0.2em] opacity-70">{eyebrow}</p>
+                                <p
+                                    className="text-xs font-semibold uppercase tracking-[0.2em] opacity-70"
+                                    {...cf(collection.sys.id, 'introduction')}>
+                                    {eyebrow}
+                                </p>
                             )}
                             {f.heading && <h2 className="mt-3 text-3xl font-extrabold md:text-4xl">{f.heading}</h2>}
                         </div>

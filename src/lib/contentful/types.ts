@@ -26,6 +26,7 @@ export type CfEntry<T extends Record<string, unknown> = Record<string, unknown>>
     sys: {
         id: string;
         contentType: { sys: { id: string } };
+        createdAt?: string;
     };
     fields: T;
 };
@@ -165,6 +166,71 @@ export type LandingPageFields = {
     sections?: CfEntry[];
     seoMetadata?: CfEntry<SeoFields>;
 };
+
+/** An author (`blogPost.author`) or a quote/review attribution. */
+export type PersonFields = {
+    internalName?: string;
+    firstName?: string;
+    lastName?: string;
+    role?: string;
+    shortBio?: string;
+    avatar?: CfAsset;
+};
+
+export type BlogPostFields = {
+    internalName?: string;
+    title?: string;
+    slug?: string;
+    teaser?: string;
+    media?: MediaEntry;
+    body?: Document;
+    author?: CfEntry<PersonFields>[];
+    relatedPosts?: CfEntry<BlogPostFields>[];
+    seoMetadata?: CfEntry<SeoFields>;
+    cta?: CfEntry<CallToActionFields>;
+};
+
+/** A listing of one content type. The storefront serves the `blogPost` listing at `/blog`. */
+export type DynamicListingPageFields = {
+    internalName?: string;
+    title?: string;
+    slug?: string;
+    teaser?: string;
+    media?: MediaEntry;
+    hero?: CfEntry;
+    listingType?: 'blogPost' | 'policy' | 'event' | 'person' | 'supportArticleCategory' | 'storeLocation';
+    seoMetadata?: CfEntry<SeoFields>;
+    additionalSections?: CfEntry[];
+};
+
+/**
+ * A query-driven collection. `type` holds content type display names (`Blog Post`, `Product`, …). Contentful stores
+ * no items: the page loader runs the query and fills `items`, so the section renders like a `collection`.
+ */
+export type DynamicCollectionFields = {
+    internalName?: string;
+    heading?: string;
+    introduction?: Document;
+    links?: CfEntry<LinkFields>[];
+    type?: string[];
+    limit?: number;
+    include?: CfEntry[];
+    exclude?: CfEntry[];
+    theme?: 'Default' | 'Primary' | 'Secondary';
+    displayOrder?: 'Newest First' | 'Oldest First';
+    /** Set by the loader (`resolveDynamicCollections`), never by Contentful. */
+    items?: CfEntry[];
+};
+
+/** Entries a `blogPost` body may embed as blocks besides `callToAction`. */
+export type QuoteFields = { internalName?: string; quote?: Document; author?: CfEntry<PersonFields> };
+export type CustomerReviewFields = {
+    internalName?: string;
+    rating?: number;
+    review?: Document;
+    attribution?: CfEntry<PersonFields>;
+};
+export type MediaMentionFields = { internalName?: string; quote?: Document; source?: CfEntry<CompanyFields> };
 
 export type NavigationFields = {
     internalName?: string;
